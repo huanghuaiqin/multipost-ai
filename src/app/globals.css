@@ -35,3 +35,22 @@ body {
     transform: translateY(0);
   }
 }
+
+@keyframes typing-cursor-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  50.01%,
+  100% {
+    opacity: 0;
+  }
+}
+
+.typing-cursor {
+  display: inline-block;
+  width: 0.55ch;
+  border-right: 2px solid currentColor;
+  margin-left: 1px;
+  animation: typing-cursor-blink 1s step-start infinite;
+}

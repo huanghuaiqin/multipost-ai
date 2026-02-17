@@ -2,7 +2,7 @@
 
 import OpenAI from "openai";
 
-type StyleKey = "xiaohongshu" | "weixin" | "tiktok";
+type StyleKey = "xiaohongshu" | "weixin" | "tiktok" | "douyin" | "bilibili";
 
 type RewriteResult = {
   style: StyleKey;
@@ -14,17 +14,33 @@ export type RewriteState = {
   error?: string | null;
 };
 
+type XiaohongshuVideoScene = {
+  visual?: unknown;
+  voiceover?: unknown;
+};
+
 type PlatformStructuredResult = {
   xiaohongshu?: {
     title?: string;
     body?: string;
     hashtags?: string[];
+    video_script?: {
+      scenes?: XiaohongshuVideoScene[];
+    };
   };
   weixin?: {
     title?: string;
     body?: string;
   };
   tiktok?: {
+    title?: string;
+    body?: string;
+  };
+  douyin?: {
+    title?: string;
+    body?: string;
+  };
+  bilibili?: {
     title?: string;
     body?: string;
   };
@@ -164,8 +180,28 @@ function extractStructuredResultFromText(
       body: extractStringField(tiktokBlock, "body"),
     };
   }
+  const douyinBlock = extractBlockForKey(content, "douyin");
+  if (douyinBlock) {
+    next.douyin = {
+      title: extractStringField(douyinBlock, "title"),
+      body: extractStringField(douyinBlock, "body"),
+    };
+  }
+  const bilibiliBlock = extractBlockForKey(content, "bilibili");
+  if (bilibiliBlock) {
+    next.bilibili = {
+      title: extractStringField(bilibiliBlock, "title"),
+      body: extractStringField(bilibiliBlock, "body"),
+    };
+  }
 
-  if (!next.xiaohongshu && !next.weixin && !next.tiktok) {
+  if (
+    !next.xiaohongshu &&
+    !next.weixin &&
+    !next.tiktok &&
+    !next.douyin &&
+    !next.bilibili
+  ) {
     return null;
   }
 
@@ -174,13 +210,25 @@ function extractStructuredResultFromText(
 
 const systemPrompt =
   "你是一名拥有至少 5 年经验的全平台资深新媒体运营专家，深度熟悉小红书、微信视频号和 TikTok 等平台的内容风格与算法偏好。" +
-  "你的任务是：根据用户提供的原始内容，为这三个平台分别生成高度适配的改写文案，并严格按照指定的 JSON 结构返回结果。" +
+  "你的任务是：根据用户提供的原始内容，为小红书图文、小红书视频脚本、微信视频号、TikTok、抖音和 B 站生成高度适配的改写文案，并严格按照指定的 JSON 结构返回结果。" +
   "必须注意：只允许输出 JSON，不要包含任何额外说明、提示语或非 JSON 文本。" +
   "返回格式（必须可以被 JSON.parse 直接解析）为：" +
   '{' +
-  '"xiaohongshu": {"title": "标题", "body": "正文", "hashtags": ["#话题1", "#话题2", "#话题3", "#话题4", "#话题5"]},' +
+  '"xiaohongshu": {' +
+  '"title": "标题",' +
+  '"body": "正文",' +
+  '"hashtags": ["#话题1", "#话题2", "#话题3", "#话题4", "#话题5"],' +
+  '"video_script": {' +
+  '"scenes": [' +
+  '{"visual": "第一镜头的视觉画面建议", "voiceover": "第一镜头的口播文案"},' +
+  '{"visual": "第二镜头的视觉画面建议", "voiceover": "第二镜头的口播文案"}' +
+  "]" +
+  "}" +
+  "}," +
   '"weixin": {"title": "标题", "body": "正文"},' +
-  '"tiktok": {"title": "Title", "body": "Body"}' +
+  '"tiktok": {"title": "Title", "body": "Body"},' +
+  '"douyin": {"title": "标题", "body": "正文"},' +
+  '"bilibili": {"title": "标题", "body": "正文"}' +
   "}" +
   "具体风格要求如下：" +
   "1）小红书（xiaohongshu）：" +
@@ -189,6 +237,8 @@ const systemPrompt =
   " - 正文：多使用 Emoji（例如 ✨、💡、🎀 等），语气亲密、有画面感，像真人在分享「亲测好用」的宝藏心得，突出具体细节与真实感受；整篇正文中建议插入 5~8 个恰当的 Emoji，分布在不同句子中，而不是集中堆在一句话里。" +
   " - 严禁使用诸如「在这个快节奏的时代」「随着时代的发展」等陈词滥调和模板化句子，尽量用新鲜、有画面感的表达。" +
   " - 结尾：必须输出 5 个与内容垂直领域高度相关的热门话题标签（以 # 开头，放入 hashtags 数组），例如「#效率工具」「#职场成长」等，不要泛泛而谈。" +
+  " - 同时，请在 xiaohongshu.video_script.scenes 字段中，为同一主题生成一个适合小红书视频的分镜头脚本；每个场景对象需包含 visual（视觉画面建议）和 voiceover（口播文案），语言风格与图文保持一致但更适合口播节奏。" +
+  " - 脚本模式必须让用户一眼看出「画面」和「台词」的区别：请确保每个场景的 visual 与 voiceover 内容尽量简洁，适合作为字幕朗读，系统会在最终展示时为你自动加上【视觉画面】和【口播文案】等分段符号。" +
   "2）视频号（weixin）：" +
   " - 角色：稳重、专业的内容创作者或职场教练，面向「职场精英人群」做深度分享。" +
   " - 标题：稳重但有记忆点，兼顾专业感与吸引力，适合职场人士在朋友圈或同事群中转发。" +
@@ -200,6 +250,15 @@ const systemPrompt =
   " - 标题（title）：第一句必须是强力 Hook，优先使用地道英文的反问句或极简有力短句（例如「You really still do it this way?」这类形式），让用户在前 3 秒就有继续看的冲动。" +
   " - 正文（body）：使用极简、地道的英文俚语和口语表达，句子短促、有节奏，适合配合快节奏短视频节奏，可以通过分行来营造停顿感和强调重点；避免像作文那样长句堆砌。" +
   " - 风格：避免堆砌长段文案和生硬的教学语气，可以适度加入 1~3 个英文 Hashtag，但不要将 Hashtag 作为主要内容载体。" +
+  "4）抖音（douyin）：" +
+  " - 语言：使用轻松、幽默、有梗的中文表达，可以合理引用网络热梗和弹幕口吻，但避免低俗或攻击性内容。" +
+  " - 标题（title）：必须带有强烈悬念感或反差感，适合做封面大标题，让人「不点进去就难受」；避免空泛的励志口号。" +
+  " - 正文（body）：文案必须极其精简，适合作为视频字幕使用，每一句长度控制在短短一行内，保证读完不费力；尽量用分行控制节奏，突出前 3 秒的 Hook。" +
+  " - 内容：适合用作竖屏视频脚本或屏幕字幕，突出冲突、反转或强共鸣点，让观众愿意停留和看完。不要写成长篇大论的段落。" +
+  "5）B 站（bilibili）：" +
+  " - 语言：偏长一点的深度向表达，可以兼具知识密度与聊天感，适当加入弹幕风格的吐槽或梗，但避免低俗或攻击性内容。" +
+  " - 节奏：整体可以比抖音更从容，但开头仍需有一个清晰的金句 or 悬念，适合作为视频开场旁白或简介。" +
+  " - 结尾：正文最后一行必须加上一句「记得一键三连哦～」，字面内容不得改写或省略，不要在这句话后面再追加其他文案。" +
   "防幻觉与输入质量规则：" +
   " - 请根据用户输入内容本身进行改写，不要凭空捏造不存在的品牌、数据或经历。" +
   " - 如果用户输入的内容过短、为空，或者明显无意义（例如只有少量表情、随机字符、与内容创作无关的噪音信息），不要强行编造完整文案。" +
@@ -246,20 +305,28 @@ export async function rewriteAction(
     }
 
     if (!parsed) {
-      const fallbackResults: RewriteResult[] = [
-        {
-          style: "xiaohongshu",
-          content,
-        },
-        {
-          style: "weixin",
-          content,
-        },
-        {
-          style: "tiktok",
-          content,
-        },
-      ];
+    const fallbackResults: RewriteResult[] = [
+      {
+        style: "xiaohongshu",
+        content,
+      },
+      {
+        style: "weixin",
+        content,
+      },
+      {
+        style: "tiktok",
+        content,
+      },
+      {
+        style: "douyin",
+        content,
+      },
+      {
+        style: "bilibili",
+        content,
+      },
+    ];
 
       return {
         results: fallbackResults,
@@ -286,6 +353,49 @@ export async function rewriteAction(
       xhsContentParts.push(xhsTags.join(" "));
     }
 
+  const xhsScenes =
+    parsed.xiaohongshu?.video_script?.scenes ?? [];
+
+  if (Array.isArray(xhsScenes) && xhsScenes.length > 0) {
+    const blocks = xhsScenes
+      .map((scene, index) => {
+        if (!scene) {
+          return "";
+        }
+
+        const visual =
+          scene.visual && typeof scene.visual === "string"
+            ? scene.visual.trim()
+            : "";
+        const voiceover =
+          scene.voiceover && typeof scene.voiceover === "string"
+            ? scene.voiceover.trim()
+            : "";
+
+        if (!visual && !voiceover) {
+          return "";
+        }
+
+        const lines: string[] = [];
+        lines.push(`镜头 ${index + 1}`);
+        if (visual) {
+          lines.push(`【视觉画面】${visual}`);
+        }
+        if (voiceover) {
+          lines.push(`【口播文案】${voiceover}`);
+        }
+
+        return lines.join("\n");
+      })
+      .filter((item) => item.length > 0);
+
+    if (blocks.length > 0) {
+      xhsContentParts.push(
+        ["小红书视频脚本：", ...blocks].join("\n\n"),
+      );
+    }
+  }
+
     const weixinTitle = parsed.weixin?.title?.toString().trim() ?? "";
     const weixinBody = parsed.weixin?.body?.toString().trim() ?? "";
     const weixinContentParts: string[] = [];
@@ -306,6 +416,26 @@ export async function rewriteAction(
       tiktokContentParts.push(tiktokBody);
     }
 
+  const douyinTitle = parsed.douyin?.title?.toString().trim() ?? "";
+  const douyinBody = parsed.douyin?.body?.toString().trim() ?? "";
+  const douyinContentParts: string[] = [];
+  if (douyinTitle) {
+    douyinContentParts.push(douyinTitle);
+  }
+  if (douyinBody) {
+    douyinContentParts.push(douyinBody);
+  }
+
+  const bilibiliTitle = parsed.bilibili?.title?.toString().trim() ?? "";
+  const bilibiliBody = parsed.bilibili?.body?.toString().trim() ?? "";
+  const bilibiliContentParts: string[] = [];
+  if (bilibiliTitle) {
+    bilibiliContentParts.push(bilibiliTitle);
+  }
+  if (bilibiliBody) {
+    bilibiliContentParts.push(bilibiliBody);
+  }
+
     const baseResults: RewriteResult[] = [
       {
         style: "xiaohongshu",
@@ -319,6 +449,14 @@ export async function rewriteAction(
         style: "tiktok",
         content: tiktokContentParts.join("\n\n"),
       },
+    {
+      style: "douyin",
+      content: douyinContentParts.join("\n\n"),
+    },
+    {
+      style: "bilibili",
+      content: bilibiliContentParts.join("\n\n"),
+    },
     ];
 
     const results = baseResults.filter((item) => item.content.length > 0);

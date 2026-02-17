@@ -1,7 +1,15 @@
 "use client";
 
 import { useEffect, useState, useActionState } from "react";
-import { Sparkles, BriefcaseBusiness, Globe2, Copy, Check } from "lucide-react";
+import {
+  Sparkles,
+  MessageCircle,
+  Globe2,
+  Activity,
+  Tv2,
+  Copy,
+  Check,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -12,7 +20,12 @@ import {
 } from "@/components/ui/card";
 import { rewriteAction, type RewriteState } from "./actions";
 
-type StyleKey = "xiaohongshu" | "weixin" | "tiktok";
+type StyleKey =
+  | "xiaohongshu"
+  | "weixin"
+  | "tiktok"
+  | "douyin"
+  | "bilibili";
 
 type RewriteResult = {
   style: StyleKey;
@@ -39,14 +52,29 @@ export default function Home() {
     xiaohongshu: "",
     weixin: "",
     tiktok: "",
+    douyin: "",
+    bilibili: "",
+  });
+  const [typingStates, setTypingStates] = useState<Record<StyleKey, boolean>>({
+    xiaohongshu: false,
+    weixin: false,
+    tiktok: false,
+    douyin: false,
+    bilibili: false,
   });
   const hasResults = results.length > 0;
 
   useEffect(() => {
-    const styles: StyleKey[] = ["xiaohongshu", "weixin", "tiktok"];
+    const styles: StyleKey[] = [
+      "xiaohongshu",
+      "weixin",
+      "tiktok",
+      "douyin",
+      "bilibili",
+    ];
     const timeouts: number[] = [];
 
-    styles.forEach((style, index) => {
+    styles.forEach((style) => {
       const full = results.find((item) => item.style === style)?.content ?? "";
 
       if (!full) {
@@ -54,13 +82,26 @@ export default function Home() {
           ...prev,
           [style]: "",
         }));
+        setTypingStates((prev) => ({
+          ...prev,
+          [style]: false,
+        }));
         return;
       }
 
       let currentIndex = 0;
 
+      setTypedContent((prev) => ({
+        ...prev,
+        [style]: "",
+      }));
+      setTypingStates((prev) => ({
+        ...prev,
+        [style]: true,
+      }));
+
       const step = () => {
-        currentIndex += 2;
+        currentIndex += 1;
 
         setTypedContent((prev) => ({
           ...prev,
@@ -69,7 +110,12 @@ export default function Home() {
 
         if (currentIndex < full.length) {
           const id = window.setTimeout(step, 18);
-          timeouts[index] = id;
+          timeouts.push(id);
+        } else {
+          setTypingStates((prev) => ({
+            ...prev,
+            [style]: false,
+          }));
         }
       };
 
@@ -116,7 +162,7 @@ export default function Home() {
             内容搬运工 · Multipost AI
           </span>
           <h1 className="text-balance text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-4xl">
-            一段原始内容，一键改写为小红书 / 视频号 / TikTok 多端文案
+            一段原始内容，一键改写为多平台多形态运营级文案
           </h1>
           <p className="mx-auto max-w-2xl text-sm text-slate-600 dark:text-slate-400">
             这是一个专注于「内容搬运」场景的原型工具。粘贴任意一段内容或链接，即可调用 AI 一键生成三种平台风格的改写文案。
@@ -145,7 +191,7 @@ export default function Home() {
                 />
                 <div className="flex flex-wrap items-center justify-between gap-3">
                   <p className="text-xs text-slate-500 dark:text-slate-400">
-                    点击按钮后会调用 AI 实时改写内容，生成三种平台风格的文案预览。
+                    点击按钮后会调用 AI 实时改写内容，生成多平台风格的文案预览。
                   </p>
                   <div className="flex items-center gap-2">
                     <Button
@@ -186,10 +232,99 @@ export default function Home() {
                   点击按钮后展示 Skeleton Loading，约 3 秒填充样板文案。
                 </p>
               )}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Activity className="h-4 w-4 text-fuchsia-500" />
+                    抖音短视频
+                  </CardTitle>
+                  {getResultByStyle("douyin") && (
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("douyin")}
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-100"
+                    >
+                      {copiedStyle === "douyin" ? (
+                        <Check className="h-3.5 w-3.5" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <div className="space-y-3">
+                      <div className="h-3 w-24 rounded-full bg-fuchsia-100 animate-pulse dark:bg-fuchsia-900/60" />
+                      <div className="space-y-2">
+                        <div className="h-2 w-full rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                        <div className="h-2 w-10/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                        <div className="h-2 w-8/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                      </div>
+                    </div>
+                  ) : getResultByStyle("douyin") ? (
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed animate-[fade-in-up_0.35s_ease-out]">
+                      {typedContent.douyin || getResultByStyle("douyin")}
+                      {typingStates.douyin && (
+                        <span className="typing-cursor align-middle" />
+                      )}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      更偏短视频脚本，节奏快、有梗，前 3 秒 Hook 强，适合抖音推荐流。
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Tv2 className="h-4 w-4 text-sky-500" />
+                    B 站风格
+                  </CardTitle>
+                  {getResultByStyle("bilibili") && (
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("bilibili")}
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-100"
+                    >
+                      {copiedStyle === "bilibili" ? (
+                        <Check className="h-3.5 w-3.5" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <div className="space-y-3">
+                      <div className="h-3 w-24 rounded-full bg-sky-100 animate-pulse dark:bg-sky-900/60" />
+                      <div className="space-y-2">
+                        <div className="h-2 w-full rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                        <div className="h-2 w-10/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                        <div className="h-2 w-8/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                      </div>
+                    </div>
+                  ) : getResultByStyle("bilibili") ? (
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed animate-[fade-in-up_0.35s_ease-out]">
+                      {typedContent.bilibili || getResultByStyle("bilibili")}
+                      {typingStates.bilibili && (
+                        <span className="typing-cursor align-middle" />
+                      )}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      适合长一点的深度视频，语气幽默、有弹幕感，同时保留知识密度和干货。
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
             </div>
 
-            <div className="grid gap-3 md:grid-cols-3">
-              <Card>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <Card className="border-rose-100/80 bg-rose-50/70 shadow-sm shadow-rose-100/70 dark:border-rose-900/70 dark:bg-rose-950/20">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Sparkles className="h-4 w-4 text-rose-500" />
@@ -222,6 +357,9 @@ export default function Home() {
                   ) : getResultByStyle("xiaohongshu") ? (
                     <p className="whitespace-pre-wrap text-sm leading-relaxed animate-[fade-in-up_0.35s_ease-out]">
                       {typedContent.xiaohongshu || getResultByStyle("xiaohongshu")}
+                      {typingStates.xiaohongshu && (
+                        <span className="typing-cursor align-middle" />
+                      )}
                     </p>
                   ) : (
                     <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -233,16 +371,18 @@ export default function Home() {
               </Card>
 
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <BriefcaseBusiness className="h-4 w-4 text-amber-500" />
-                    视频号风格
+                <CardHeader className="flex items-center justify-between gap-2 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-emerald-500 px-4 py-3 text-emerald-50 shadow-sm dark:from-emerald-700 dark:via-emerald-700 dark:to-emerald-600">
+                  <CardTitle className="flex items-center gap-2 text-emerald-50">
+                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10">
+                      <MessageCircle className="h-3.5 w-3.5 text-emerald-100" />
+                    </span>
+                    <span>视频号风格</span>
                   </CardTitle>
                   {getResultByStyle("weixin") && (
                     <button
                       type="button"
                       onClick={() => handleCopy("weixin")}
-                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-100"
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-emerald-200/40 bg-emerald-50/10 text-emerald-50 transition hover:border-emerald-100 hover:bg-emerald-50/20 dark:border-emerald-200/30"
                     >
                       {copiedStyle === "weixin" ? (
                         <Check className="h-3.5 w-3.5" />
@@ -265,6 +405,9 @@ export default function Home() {
                   ) : getResultByStyle("weixin") ? (
                     <p className="whitespace-pre-wrap text-sm leading-relaxed animate-[fade-in-up_0.35s_ease-out]">
                       {typedContent.weixin || getResultByStyle("weixin")}
+                      {typingStates.weixin && (
+                        <span className="typing-cursor align-middle" />
+                      )}
                     </p>
                   ) : (
                     <p className="text-xs text-slate-500 dark:text-slate-400">
@@ -275,48 +418,53 @@ export default function Home() {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Globe2 className="h-4 w-4 text-sky-500" />
-                    TikTok 国际版
-                  </CardTitle>
-                  {getResultByStyle("tiktok") && (
-                    <button
-                      type="button"
-                      onClick={() => handleCopy("tiktok")}
-                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-100"
-                    >
-                      {copiedStyle === "tiktok" ? (
-                        <Check className="h-3.5 w-3.5" />
-                      ) : (
-                        <Copy className="h-3.5 w-3.5" />
-                      )}
-                    </button>
-                  )}
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <div className="space-y-3">
-                      <div className="h-3 w-28 rounded-full bg-sky-100 animate-pulse dark:bg-sky-900/60" />
-                      <div className="space-y-2">
-                        <div className="h-2 w-full rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
-                        <div className="h-2 w-10/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
-                        <div className="h-2 w-8/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+              <div className="rounded-2xl bg-[conic-gradient(from_140deg_at_10%_0%,#f97316,#22d3ee,#a855f7,#f97316)] p-[1px] shadow-[0_0_26px_rgba(56,189,248,0.45)]">
+                <Card className="h-full rounded-[1rem] border-slate-900 bg-slate-950 text-slate-50">
+                  <CardHeader className="flex items-center justify-between gap-2">
+                    <CardTitle className="flex items-center gap-2 text-slate-50">
+                      <Globe2 className="h-4 w-4 text-sky-400" />
+                      <span>TikTok 国际版</span>
+                    </CardTitle>
+                    {getResultByStyle("tiktok") && (
+                      <button
+                        type="button"
+                        onClick={() => handleCopy("tiktok")}
+                        className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-700 bg-slate-900/80 text-slate-300 transition hover:border-sky-400 hover:text-sky-300"
+                      >
+                        {copiedStyle === "tiktok" ? (
+                          <Check className="h-3.5 w-3.5" />
+                        ) : (
+                          <Copy className="h-3.5 w-3.5" />
+                        )}
+                      </button>
+                    )}
+                  </CardHeader>
+                  <CardContent>
+                    {isLoading ? (
+                      <div className="space-y-3">
+                        <div className="h-3 w-28 rounded-full bg-sky-100 animate-pulse dark:bg-sky-900/60" />
+                        <div className="space-y-2">
+                          <div className="h-2 w-full rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                          <div className="h-2 w-10/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                          <div className="h-2 w-8/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                        </div>
                       </div>
-                    </div>
-                  ) : getResultByStyle("tiktok") ? (
-                    <p className="whitespace-pre-wrap text-sm leading-relaxed animate-[fade-in-up_0.35s_ease-out]">
-                      {typedContent.tiktok || getResultByStyle("tiktok")}
-                    </p>
-                  ) : (
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      极简、高能量的口语化英文，强调 Hook、节奏感和可被记住的一句
-                      话，适合短视频开头脚本。
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
+                    ) : getResultByStyle("tiktok") ? (
+                      <p className="whitespace-pre-wrap text-sm leading-relaxed animate-[fade-in-up_0.35s_ease-out]">
+                        {typedContent.tiktok || getResultByStyle("tiktok")}
+                        {typingStates.tiktok && (
+                          <span className="typing-cursor align-middle" />
+                        )}
+                      </p>
+                    ) : (
+                      <p className="text-xs text-slate-400">
+                        极简、高能量的口语化英文，强调 Hook、节奏感和可被记住的一句
+                        话，适合短视频开头脚本。
+                      </p>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
             </div>
           </div>
         </section>
