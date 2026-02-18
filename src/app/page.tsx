@@ -6,7 +6,8 @@ import {
   MessageCircle,
   Globe2,
   Activity,
-  Tv2,
+  Clapperboard,
+  Youtube,
   Copy,
   Check,
 } from "lucide-react";
@@ -22,10 +23,11 @@ import { rewriteAction, type RewriteState } from "./actions";
 
 type StyleKey =
   | "xiaohongshu"
+  | "xiaohongshu_video"
   | "weixin"
   | "tiktok"
   | "douyin"
-  | "bilibili";
+  | "youtube";
 
 type RewriteResult = {
   style: StyleKey;
@@ -50,27 +52,30 @@ export default function Home() {
   const [showCopyToast, setShowCopyToast] = useState(false);
   const [typedContent, setTypedContent] = useState<Record<StyleKey, string>>({
     xiaohongshu: "",
+    xiaohongshu_video: "",
     weixin: "",
     tiktok: "",
     douyin: "",
-    bilibili: "",
+    youtube: "",
   });
   const [typingStates, setTypingStates] = useState<Record<StyleKey, boolean>>({
     xiaohongshu: false,
+    xiaohongshu_video: false,
     weixin: false,
     tiktok: false,
     douyin: false,
-    bilibili: false,
+    youtube: false,
   });
   const hasResults = results.length > 0;
 
   useEffect(() => {
     const styles: StyleKey[] = [
       "xiaohongshu",
+      "xiaohongshu_video",
       "weixin",
       "tiktok",
       "douyin",
-      "bilibili",
+      "youtube",
     ];
     const timeouts: number[] = [];
 
@@ -280,16 +285,16 @@ export default function Home() {
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Tv2 className="h-4 w-4 text-sky-500" />
-                    B 站风格
+                    <Youtube className="h-4 w-4 text-red-500" />
+                    YouTube 风格
                   </CardTitle>
-                  {getResultByStyle("bilibili") && (
+                  {getResultByStyle("youtube") && (
                     <button
                       type="button"
-                      onClick={() => handleCopy("bilibili")}
+                      onClick={() => handleCopy("youtube")}
                       className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-100"
                     >
-                      {copiedStyle === "bilibili" ? (
+                      {copiedStyle === "youtube" ? (
                         <Check className="h-3.5 w-3.5" />
                       ) : (
                         <Copy className="h-3.5 w-3.5" />
@@ -300,23 +305,23 @@ export default function Home() {
                 <CardContent>
                   {isLoading ? (
                     <div className="space-y-3">
-                      <div className="h-3 w-24 rounded-full bg-sky-100 animate-pulse dark:bg-sky-900/60" />
+                      <div className="h-3 w-24 rounded-full bg-red-100 animate-pulse dark:bg-red-900/60" />
                       <div className="space-y-2">
                         <div className="h-2 w-full rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
                         <div className="h-2 w-10/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
                         <div className="h-2 w-8/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
                       </div>
                     </div>
-                  ) : getResultByStyle("bilibili") ? (
+                  ) : getResultByStyle("youtube") ? (
                     <p className="whitespace-pre-wrap text-sm leading-relaxed animate-[fade-in-up_0.35s_ease-out]">
-                      {typedContent.bilibili || getResultByStyle("bilibili")}
-                      {typingStates.bilibili && (
+                      {typedContent.youtube || getResultByStyle("youtube")}
+                      {typingStates.youtube && (
                         <span className="typing-cursor align-middle" />
                       )}
                     </p>
                   ) : (
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      适合长一点的深度视频，语气幽默、有弹幕感，同时保留知识密度和干货。
+                      适合全球受众的英文长视频，突出标题 Hook 和信息密度，配合简介型文案。
                     </p>
                   )}
                 </CardContent>
@@ -365,6 +370,52 @@ export default function Home() {
                     <p className="text-xs text-slate-500 dark:text-slate-400">
                       偏情绪化+生活化，适合种草、复盘、宝藏分享，多用 Emoji 和「宝藏
                       / 干货 / 亲测」等关键词。
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clapperboard className="h-4 w-4 text-rose-500" />
+                    小红书视频脚本
+                  </CardTitle>
+                  {getResultByStyle("xiaohongshu_video") && (
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("xiaohongshu_video")}
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-100"
+                    >
+                      {copiedStyle === "xiaohongshu_video" ? (
+                        <Check className="h-3.5 w-3.5" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <div className="space-y-3">
+                      <div className="h-3 w-24 rounded-full bg-rose-100 animate-pulse dark:bg-rose-900/60" />
+                      <div className="space-y-2">
+                        <div className="h-2 w-full rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                        <div className="h-2 w-11/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                        <div className="h-2 w-9/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                      </div>
+                    </div>
+                  ) : getResultByStyle("xiaohongshu_video") ? (
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed animate-[fade-in-up_0.35s_ease-out]">
+                      {typedContent.xiaohongshu_video ||
+                        getResultByStyle("xiaohongshu_video")}
+                      {typingStates.xiaohongshu_video && (
+                        <span className="typing-cursor align-middle" />
+                      )}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      将同一主题拆成镜头脚本，每个镜头区分【视觉画面】和【口播文案】，方便拍摄。
                     </p>
                   )}
                 </CardContent>

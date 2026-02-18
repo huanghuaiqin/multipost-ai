@@ -2,7 +2,13 @@
 
 import OpenAI from "openai";
 
-type StyleKey = "xiaohongshu" | "weixin" | "tiktok" | "douyin" | "bilibili";
+type StyleKey =
+  | "xiaohongshu"
+  | "xiaohongshu_video"
+  | "weixin"
+  | "tiktok"
+  | "douyin"
+  | "youtube";
 
 type RewriteResult = {
   style: StyleKey;
@@ -39,8 +45,11 @@ type PlatformStructuredResult = {
   douyin?: {
     title?: string;
     body?: string;
+    video_script?: {
+      scenes?: XiaohongshuVideoScene[];
+    };
   };
-  bilibili?: {
+  youtube?: {
     title?: string;
     body?: string;
   };
@@ -187,11 +196,11 @@ function extractStructuredResultFromText(
       body: extractStringField(douyinBlock, "body"),
     };
   }
-  const bilibiliBlock = extractBlockForKey(content, "bilibili");
-  if (bilibiliBlock) {
-    next.bilibili = {
-      title: extractStringField(bilibiliBlock, "title"),
-      body: extractStringField(bilibiliBlock, "body"),
+  const youtubeBlock = extractBlockForKey(content, "youtube");
+  if (youtubeBlock) {
+    next.youtube = {
+      title: extractStringField(youtubeBlock, "title"),
+      body: extractStringField(youtubeBlock, "body"),
     };
   }
 
@@ -200,7 +209,7 @@ function extractStructuredResultFromText(
     !next.weixin &&
     !next.tiktok &&
     !next.douyin &&
-    !next.bilibili
+    !next.youtube
   ) {
     return null;
   }
@@ -209,8 +218,8 @@ function extractStructuredResultFromText(
 }
 
 const systemPrompt =
-  "你是一名拥有至少 5 年经验的全平台资深新媒体运营专家，深度熟悉小红书、微信视频号和 TikTok 等平台的内容风格与算法偏好。" +
-  "你的任务是：根据用户提供的原始内容，为小红书图文、小红书视频脚本、微信视频号、TikTok、抖音和 B 站生成高度适配的改写文案，并严格按照指定的 JSON 结构返回结果。" +
+  "你是一名拥有至少 5 年经验的全平台资深新媒体运营专家，深度熟悉小红书、微信视频号、抖音、TikTok 与 YouTube 等平台的内容风格与算法偏好。" +
+  "你的任务是：根据用户提供的原始内容，为小红书图文、小红书视频脚本、微信视频号、TikTok、抖音和 YouTube 生成高度适配的改写文案，并严格按照指定的 JSON 结构返回结果。" +
   "必须注意：只允许输出 JSON，不要包含任何额外说明、提示语或非 JSON 文本。" +
   "返回格式（必须可以被 JSON.parse 直接解析）为：" +
   '{' +
@@ -227,8 +236,8 @@ const systemPrompt =
   "}," +
   '"weixin": {"title": "标题", "body": "正文"},' +
   '"tiktok": {"title": "Title", "body": "Body"},' +
-  '"douyin": {"title": "标题", "body": "正文"},' +
-  '"bilibili": {"title": "标题", "body": "正文"}' +
+  '"douyin": {"title": "标题", "body": "正文", "video_script": {"scenes": []}},' +
+  '"youtube": {"title": "Title", "body": "Body"}' +
   "}" +
   "具体风格要求如下：" +
   "1）小红书（xiaohongshu）：" +
@@ -255,10 +264,11 @@ const systemPrompt =
   " - 标题（title）：必须带有强烈悬念感或反差感，适合做封面大标题，让人「不点进去就难受」；避免空泛的励志口号。" +
   " - 正文（body）：文案必须极其精简，适合作为视频字幕使用，每一句长度控制在短短一行内，保证读完不费力；尽量用分行控制节奏，突出前 3 秒的 Hook。" +
   " - 内容：适合用作竖屏视频脚本或屏幕字幕，突出冲突、反转或强共鸣点，让观众愿意停留和看完。不要写成长篇大论的段落。" +
-  "5）B 站（bilibili）：" +
-  " - 语言：偏长一点的深度向表达，可以兼具知识密度与聊天感，适当加入弹幕风格的吐槽或梗，但避免低俗或攻击性内容。" +
-  " - 节奏：整体可以比抖音更从容，但开头仍需有一个清晰的金句 or 悬念，适合作为视频开场旁白或简介。" +
-  " - 结尾：正文最后一行必须加上一句「记得一键三连哦～」，字面内容不得改写或省略，不要在这句话后面再追加其他文案。" +
+  " - 同时，请在 douyin.video_script.scenes 字段中，为抖音生成一个分镜头脚本；每个场景对象同样包含 visual（画面）与 voiceover（台词），语言更有节奏感，适合快节奏剪辑。" +
+  "5）YouTube（youtube）：" +
+  " - 语言：以自然、地道的英文为主，可以兼具信息量与亲和力，避免中式英语和堆砌长难句。" +
+  " - 标题：需要具备强 Hook 和可搜索性，适合作为 YouTube 视频标题，包含用户可能搜索的关键词。" +
+  " - 正文（body）：可以理解为视频简介/置顶评论，先用一两句话总结核心看点，再补充关键信息或行动号召，鼓励观众 Like & Subscribe。" +
   "防幻觉与输入质量规则：" +
   " - 请根据用户输入内容本身进行改写，不要凭空捏造不存在的品牌、数据或经历。" +
   " - 如果用户输入的内容过短、为空，或者明显无意义（例如只有少量表情、随机字符、与内容创作无关的噪音信息），不要强行编造完整文案。" +
@@ -305,33 +315,37 @@ export async function rewriteAction(
     }
 
     if (!parsed) {
-    const fallbackResults: RewriteResult[] = [
-      {
-        style: "xiaohongshu",
-        content,
-      },
-      {
-        style: "weixin",
-        content,
-      },
-      {
-        style: "tiktok",
-        content,
-      },
-      {
-        style: "douyin",
-        content,
-      },
-      {
-        style: "bilibili",
-        content,
-      },
-    ];
+      const fallbackResults: RewriteResult[] = [
+        {
+          style: "xiaohongshu",
+          content,
+        },
+        {
+          style: "xiaohongshu_video",
+          content,
+        },
+        {
+          style: "weixin",
+          content,
+        },
+        {
+          style: "tiktok",
+          content,
+        },
+        {
+          style: "douyin",
+          content,
+        },
+        {
+          style: "youtube",
+          content,
+        },
+      ];
 
       return {
         results: fallbackResults,
         error:
-          "DeepSeek 返回内容不是有效 JSON，已暂时按同一文案展示在三种平台卡片中。",
+          "DeepSeek 返回内容不是有效 JSON，已暂时按同一文案展示在多平台卡片中。",
       };
     }
 
@@ -353,48 +367,46 @@ export async function rewriteAction(
       xhsContentParts.push(xhsTags.join(" "));
     }
 
-  const xhsScenes =
-    parsed.xiaohongshu?.video_script?.scenes ?? [];
+    const xhsScenes = parsed.xiaohongshu?.video_script?.scenes ?? [];
+    let xhsVideoScriptContent = "";
 
-  if (Array.isArray(xhsScenes) && xhsScenes.length > 0) {
-    const blocks = xhsScenes
-      .map((scene, index) => {
-        if (!scene) {
-          return "";
-        }
+    if (Array.isArray(xhsScenes) && xhsScenes.length > 0) {
+      const blocks = xhsScenes
+        .map((scene, index) => {
+          if (!scene) {
+            return "";
+          }
 
-        const visual =
-          scene.visual && typeof scene.visual === "string"
-            ? scene.visual.trim()
-            : "";
-        const voiceover =
-          scene.voiceover && typeof scene.voiceover === "string"
-            ? scene.voiceover.trim()
-            : "";
+          const visual =
+            scene.visual && typeof scene.visual === "string"
+              ? scene.visual.trim()
+              : "";
+          const voiceover =
+            scene.voiceover && typeof scene.voiceover === "string"
+              ? scene.voiceover.trim()
+              : "";
 
-        if (!visual && !voiceover) {
-          return "";
-        }
+          if (!visual && !voiceover) {
+            return "";
+          }
 
-        const lines: string[] = [];
-        lines.push(`镜头 ${index + 1}`);
-        if (visual) {
-          lines.push(`【视觉画面】${visual}`);
-        }
-        if (voiceover) {
-          lines.push(`【口播文案】${voiceover}`);
-        }
+          const lines: string[] = [];
+          lines.push(`镜头 ${index + 1}`);
+          if (visual) {
+            lines.push(`【视觉画面】${visual}`);
+          }
+          if (voiceover) {
+            lines.push(`【口播文案】${voiceover}`);
+          }
 
-        return lines.join("\n");
-      })
-      .filter((item) => item.length > 0);
+          return lines.join("\n");
+        })
+        .filter((item) => item.length > 0);
 
-    if (blocks.length > 0) {
-      xhsContentParts.push(
-        ["小红书视频脚本：", ...blocks].join("\n\n"),
-      );
+      if (blocks.length > 0) {
+        xhsVideoScriptContent = ["小红书视频脚本：", ...blocks].join("\n\n");
+      }
     }
-  }
 
     const weixinTitle = parsed.weixin?.title?.toString().trim() ?? "";
     const weixinBody = parsed.weixin?.body?.toString().trim() ?? "";
@@ -416,25 +428,66 @@ export async function rewriteAction(
       tiktokContentParts.push(tiktokBody);
     }
 
-  const douyinTitle = parsed.douyin?.title?.toString().trim() ?? "";
-  const douyinBody = parsed.douyin?.body?.toString().trim() ?? "";
-  const douyinContentParts: string[] = [];
-  if (douyinTitle) {
-    douyinContentParts.push(douyinTitle);
-  }
-  if (douyinBody) {
-    douyinContentParts.push(douyinBody);
-  }
+    const douyinTitle = parsed.douyin?.title?.toString().trim() ?? "";
+    const douyinBody = parsed.douyin?.body?.toString().trim() ?? "";
+    const douyinContentParts: string[] = [];
+    if (douyinTitle) {
+      douyinContentParts.push(douyinTitle);
+    }
+    if (douyinBody) {
+      douyinContentParts.push(douyinBody);
+    }
 
-  const bilibiliTitle = parsed.bilibili?.title?.toString().trim() ?? "";
-  const bilibiliBody = parsed.bilibili?.body?.toString().trim() ?? "";
-  const bilibiliContentParts: string[] = [];
-  if (bilibiliTitle) {
-    bilibiliContentParts.push(bilibiliTitle);
-  }
-  if (bilibiliBody) {
-    bilibiliContentParts.push(bilibiliBody);
-  }
+    const douyinScenes = parsed.douyin?.video_script?.scenes ?? [];
+    if (Array.isArray(douyinScenes) && douyinScenes.length > 0) {
+      const blocks = douyinScenes
+        .map((scene, index) => {
+          if (!scene) {
+            return "";
+          }
+
+          const visual =
+            scene.visual && typeof scene.visual === "string"
+              ? scene.visual.trim()
+              : "";
+          const voiceover =
+            scene.voiceover && typeof scene.voiceover === "string"
+              ? scene.voiceover.trim()
+              : "";
+
+          if (!visual && !voiceover) {
+            return "";
+          }
+
+          const lines: string[] = [];
+          lines.push(`镜头 ${index + 1}`);
+          if (visual) {
+            lines.push(`【画面】${visual}`);
+          }
+          if (voiceover) {
+            lines.push(`【台词】${voiceover}`);
+          }
+
+          return lines.join("\n");
+        })
+        .filter((item) => item.length > 0);
+
+      if (blocks.length > 0) {
+        douyinContentParts.push(
+          ["抖音视频分镜：", ...blocks].join("\n\n"),
+        );
+      }
+    }
+
+    const youtubeTitle = parsed.youtube?.title?.toString().trim() ?? "";
+    const youtubeBody = parsed.youtube?.body?.toString().trim() ?? "";
+    const youtubeContentParts: string[] = [];
+    if (youtubeTitle) {
+      youtubeContentParts.push(youtubeTitle);
+    }
+    if (youtubeBody) {
+      youtubeContentParts.push(youtubeBody);
+    }
 
     const baseResults: RewriteResult[] = [
       {
@@ -449,15 +502,22 @@ export async function rewriteAction(
         style: "tiktok",
         content: tiktokContentParts.join("\n\n"),
       },
-    {
-      style: "douyin",
-      content: douyinContentParts.join("\n\n"),
-    },
-    {
-      style: "bilibili",
-      content: bilibiliContentParts.join("\n\n"),
-    },
+      {
+        style: "douyin",
+        content: douyinContentParts.join("\n\n"),
+      },
+      {
+        style: "youtube",
+        content: youtubeContentParts.join("\n\n"),
+      },
     ];
+
+    if (xhsVideoScriptContent) {
+      baseResults.push({
+        style: "xiaohongshu_video",
+        content: xhsVideoScriptContent,
+      });
+    }
 
     const results = baseResults.filter((item) => item.content.length > 0);
 
