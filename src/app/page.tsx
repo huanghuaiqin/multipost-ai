@@ -237,98 +237,11 @@ export default function Home() {
                   点击按钮后展示 Skeleton Loading，约 3 秒填充样板文案。
                 </p>
               )}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="h-4 w-4 text-fuchsia-500" />
-                    抖音短视频
-                  </CardTitle>
-                  {getResultByStyle("douyin") && (
-                    <button
-                      type="button"
-                      onClick={() => handleCopy("douyin")}
-                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-100"
-                    >
-                      {copiedStyle === "douyin" ? (
-                        <Check className="h-3.5 w-3.5" />
-                      ) : (
-                        <Copy className="h-3.5 w-3.5" />
-                      )}
-                    </button>
-                  )}
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <div className="space-y-3">
-                      <div className="h-3 w-24 rounded-full bg-fuchsia-100 animate-pulse dark:bg-fuchsia-900/60" />
-                      <div className="space-y-2">
-                        <div className="h-2 w-full rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
-                        <div className="h-2 w-10/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
-                        <div className="h-2 w-8/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
-                      </div>
-                    </div>
-                  ) : getResultByStyle("douyin") ? (
-                    <p className="whitespace-pre-wrap text-sm leading-relaxed animate-[fade-in-up_0.35s_ease-out]">
-                      {typedContent.douyin || getResultByStyle("douyin")}
-                      {typingStates.douyin && (
-                        <span className="typing-cursor align-middle" />
-                      )}
-                    </p>
-                  ) : (
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      更偏短视频脚本，节奏快、有梗，前 3 秒 Hook 强，适合抖音推荐流。
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Youtube className="h-4 w-4 text-red-500" />
-                    YouTube 风格
-                  </CardTitle>
-                  {getResultByStyle("youtube") && (
-                    <button
-                      type="button"
-                      onClick={() => handleCopy("youtube")}
-                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-100"
-                    >
-                      {copiedStyle === "youtube" ? (
-                        <Check className="h-3.5 w-3.5" />
-                      ) : (
-                        <Copy className="h-3.5 w-3.5" />
-                      )}
-                    </button>
-                  )}
-                </CardHeader>
-                <CardContent>
-                  {isLoading ? (
-                    <div className="space-y-3">
-                      <div className="h-3 w-24 rounded-full bg-red-100 animate-pulse dark:bg-red-900/60" />
-                      <div className="space-y-2">
-                        <div className="h-2 w-full rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
-                        <div className="h-2 w-10/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
-                        <div className="h-2 w-8/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
-                      </div>
-                    </div>
-                  ) : getResultByStyle("youtube") ? (
-                    <p className="whitespace-pre-wrap text-sm leading-relaxed animate-[fade-in-up_0.35s_ease-out]">
-                      {typedContent.youtube || getResultByStyle("youtube")}
-                      {typingStates.youtube && (
-                        <span className="typing-cursor align-middle" />
-                      )}
-                    </p>
-                  ) : (
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
-                      适合全球受众的英文长视频，突出标题 Hook 和信息密度，配合简介型文案。
-                    </p>
-                  )}
-                </CardContent>
-              </Card>
             </div>
 
+            {/* 第一行：小红书 / 抖音 / 视频号 */}
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {/* 小红书图文 */}
               <Card className="border-rose-100/80 bg-rose-50/70 shadow-sm shadow-rose-100/70 dark:border-rose-900/70 dark:bg-rose-950/20">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
@@ -375,19 +288,20 @@ export default function Home() {
                 </CardContent>
               </Card>
 
+              {/* 抖音短视频 */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
-                    <Clapperboard className="h-4 w-4 text-rose-500" />
-                    小红书视频脚本
+                    <Activity className="h-4 w-4 text-fuchsia-500" />
+                    抖音短视频
                   </CardTitle>
-                  {getResultByStyle("xiaohongshu_video") && (
+                  {getResultByStyle("douyin") && (
                     <button
                       type="button"
-                      onClick={() => handleCopy("xiaohongshu_video")}
+                      onClick={() => handleCopy("douyin")}
                       className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-100"
                     >
-                      {copiedStyle === "xiaohongshu_video" ? (
+                      {copiedStyle === "douyin" ? (
                         <Check className="h-3.5 w-3.5" />
                       ) : (
                         <Copy className="h-3.5 w-3.5" />
@@ -398,29 +312,29 @@ export default function Home() {
                 <CardContent>
                   {isLoading ? (
                     <div className="space-y-3">
-                      <div className="h-3 w-24 rounded-full bg-rose-100 animate-pulse dark:bg-rose-900/60" />
+                      <div className="h-3 w-24 rounded-full bg-fuchsia-100 animate-pulse dark:bg-fuchsia-900/60" />
                       <div className="space-y-2">
                         <div className="h-2 w-full rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
-                        <div className="h-2 w-11/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
-                        <div className="h-2 w-9/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                        <div className="h-2 w-10/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                        <div className="h-2 w-8/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
                       </div>
                     </div>
-                  ) : getResultByStyle("xiaohongshu_video") ? (
+                  ) : getResultByStyle("douyin") ? (
                     <p className="whitespace-pre-wrap text-sm leading-relaxed animate-[fade-in-up_0.35s_ease-out]">
-                      {typedContent.xiaohongshu_video ||
-                        getResultByStyle("xiaohongshu_video")}
-                      {typingStates.xiaohongshu_video && (
+                      {typedContent.douyin || getResultByStyle("douyin")}
+                      {typingStates.douyin && (
                         <span className="typing-cursor align-middle" />
                       )}
                     </p>
                   ) : (
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      将同一主题拆成镜头脚本，每个镜头区分【视觉画面】和【口播文案】，方便拍摄。
+                      更偏短视频脚本，节奏快、有梗，前 3 秒 Hook 强，适合抖音推荐流。
                     </p>
                   )}
                 </CardContent>
               </Card>
 
+              {/* 视频号 */}
               <Card>
                 <CardHeader className="flex items-center justify-between gap-2 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-emerald-500 px-4 py-3 text-emerald-50 shadow-sm dark:from-emerald-700 dark:via-emerald-700 dark:to-emerald-600">
                   <CardTitle className="flex items-center gap-2 text-emerald-50">
@@ -468,7 +382,104 @@ export default function Home() {
                   )}
                 </CardContent>
               </Card>
+            </div>
 
+            {/* 第二行：小红书分镜 / YouTube / TikTok */}
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              {/* 小红书视频脚本 */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Clapperboard className="h-4 w-4 text-rose-500" />
+                    小红书视频脚本
+                  </CardTitle>
+                  {getResultByStyle("xiaohongshu_video") && (
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("xiaohongshu_video")}
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-100"
+                    >
+                      {copiedStyle === "xiaohongshu_video" ? (
+                        <Check className="h-3.5 w-3.5" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <div className="space-y-3">
+                      <div className="h-3 w-24 rounded-full bg-rose-100 animate-pulse dark:bg-rose-900/60" />
+                      <div className="space-y-2">
+                        <div className="h-2 w-full rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                        <div className="h-2 w-11/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                        <div className="h-2 w-9/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                      </div>
+                    </div>
+                  ) : getResultByStyle("xiaohongshu_video") ? (
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed animate-[fade-in-up_0.35s_ease-out]">
+                      {typedContent.xiaohongshu_video ||
+                        getResultByStyle("xiaohongshu_video")}
+                      {typingStates.xiaohongshu_video && (
+                        <span className="typing-cursor align-middle" />
+                      )}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      将同一主题拆成镜头脚本，每个镜头区分【视觉画面】和【口播文案】，方便拍摄。
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* YouTube */}
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Youtube className="h-4 w-4 text-red-500" />
+                    YouTube 风格
+                  </CardTitle>
+                  {getResultByStyle("youtube") && (
+                    <button
+                      type="button"
+                      onClick={() => handleCopy("youtube")}
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-500 transition hover:border-slate-300 hover:text-slate-800 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-100"
+                    >
+                      {copiedStyle === "youtube" ? (
+                        <Check className="h-3.5 w-3.5" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                    </button>
+                  )}
+                </CardHeader>
+                <CardContent>
+                  {isLoading ? (
+                    <div className="space-y-3">
+                      <div className="h-3 w-24 rounded-full bg-red-100 animate-pulse dark:bg-red-900/60" />
+                      <div className="space-y-2">
+                        <div className="h-2 w-full rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                        <div className="h-2 w-10/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                        <div className="h-2 w-8/12 rounded bg-slate-200 animate-pulse dark:bg-slate-800" />
+                      </div>
+                    </div>
+                  ) : getResultByStyle("youtube") ? (
+                    <p className="whitespace-pre-wrap text-sm leading-relaxed animate-[fade-in-up_0.35s_ease-out]">
+                      {typedContent.youtube || getResultByStyle("youtube")}
+                      {typingStates.youtube && (
+                        <span className="typing-cursor align-middle" />
+                      )}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      适合全球受众的英文长视频，突出标题 Hook 和信息密度，配合简介型文案。
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* TikTok 国际版 */}
               <div className="rounded-2xl bg-[conic-gradient(from_140deg_at_10%_0%,#f97316,#22d3ee,#a855f7,#f97316)] p-[1px] shadow-[0_0_26px_rgba(56,189,248,0.45)]">
                 <Card className="h-full rounded-[1rem] border-slate-900 bg-slate-950 text-slate-50">
                   <CardHeader className="flex items-center justify-between gap-2">
