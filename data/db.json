@@ -1,0 +1,95 @@
+{
+  "news": [
+    {
+      "id": 1,
+      "title": "DeepSeek-V3 多模态模型发布，中文能力霸榜",
+      "summary": "深度求索（DeepSeek）发布最新一代 MoE 模型，在中文综合能力评测中超越 GPT-4，并大幅降低了 API 调用成本，为开发者提供更具性价比的选择。",
+      "date": "2小时前",
+      "category": "重磅",
+      "categoryColor": "text-rose-600 bg-rose-50 border-rose-100",
+      "icon": "TrendingUp",
+      "iconColor": "text-rose-500",
+      "imageColor": "bg-gradient-to-br from-rose-100 to-rose-50 dark:from-rose-950 dark:to-slate-900"
+    },
+    {
+      "id": 2,
+      "title": "OpenAI Sora 再次延期？国内 AI 视频模型异军突起",
+      "summary": "随着 Sora 公测时间的推迟，国内多家科技巨头纷纷推出自研视频生成模型，在时长、分辨率和语义理解上均取得突破性进展，甚至在部分场景下实现超越。",
+      "date": "昨天",
+      "category": "行业",
+      "categoryColor": "text-amber-600 bg-amber-50 border-amber-100",
+      "icon": "Video",
+      "iconColor": "text-amber-500",
+      "imageColor": "bg-gradient-to-br from-amber-100 to-amber-50 dark:from-amber-950 dark:to-slate-900"
+    },
+    {
+      "id": 3,
+      "title": "视频生成工具 Runway Gen-3 更新，支持运动笔刷",
+      "summary": "Runway 宣布 Gen-3 Alpha 模型迎来重大更新，新增“运动笔刷”功能，允许用户精确控制视频中特定区域的运动轨迹，极大地提升了创作的可控性。",
+      "date": "3天前",
+      "category": "产品",
+      "categoryColor": "text-blue-600 bg-blue-50 border-blue-100",
+      "icon": "Zap",
+      "iconColor": "text-blue-500",
+      "imageColor": "bg-gradient-to-br from-blue-100 to-blue-50 dark:from-blue-950 dark:to-slate-900"
+    }
+  ],
+  "learning": [
+    {
+      "id": "xhs-prompt",
+      "title": "爆款小红书 Prompt 秘籍",
+      "icon": "Sparkles",
+      "color": "text-rose-500",
+      "bgColor": "bg-rose-50 dark:bg-rose-950/30",
+      "borderColor": "border-rose-100 dark:border-rose-900",
+      "desc": "一键复制高转化提示词，轻松搞定标题与正文",
+      "content": {
+        "title": "小红书爆款 Prompt 秘籍",
+        "items": [
+          {
+            "label": "小红书情绪化标题生成",
+            "prompt": "你是一个小红书爆款标题专家。请根据我提供的主题，生成10个极具吸引力的标题。要求：包含情绪词（如：绝绝子、哭死、万万没想到）、数字量化、引发好奇，并使用 Emoji 装饰。我的主题是："
+          },
+          {
+            "label": "种草文案通用模板",
+            "prompt": "请写一篇小红书种草文案。产品：[产品名称]。结构：1. 痛点引入（场景化描述）；2. 产品亮点（3个核心卖点）；3. 使用体验（真实感）；4. 结尾引导（点赞/收藏）。语气：真诚分享，多用 Emoji。"
+          },
+          {
+            "label": "干货分享类结构",
+            "prompt": "请写一篇干货分享类的小红书笔记。主题：[主题]。要求：1. 标题吸引人；2. 正文分点阐述（1.2.3.）；3. 重点内容加粗；4. 结尾总结并求关注。风格：专业、干练。"
+          },
+          {
+            "label": "探店/打卡文案",
+            "prompt": "请写一篇探店打卡文案。地点：[地点]。要求：突出环境氛围、必点美食/必拍角落、人均消费。语气：兴奋、安利向，多用感叹号和表情符号。"
+          }
+        ]
+      }
+    },
+    {
+      "id": "ai-tone",
+      "title": "如何让 AI 写出你的语气",
+      "icon": "UserCog",
+      "color": "text-amber-500",
+      "bgColor": "bg-amber-50 dark:bg-amber-950/30",
+      "borderColor": "border-amber-100 dark:border-amber-900",
+      "desc": "告别 AI 味，三步调教出专属你的写作风格",
+      "content": {
+        "title": "AI 语气调教指南",
+        "text": "\n### 1. 投喂样文 (Few-Shot Prompting)\n最直接的方法是给 AI 看你以前写的文章。\n**Prompt 示例**：\n“请模仿以下文字的风格（语气、用词习惯、句式长短），为我写一段关于[新主题]的内容。\n【样文 1】：......\n【样文 2】：......”\n\n### 2. 角色设定与风格描述\n明确告诉 AI 你是谁，以及你想要的风格关键词。\n**Prompt 示例**：\n“你是一个[资深科技博主]，你的写作风格是[犀利、幽默、喜欢用反讽]。请用这种风格评论一下最新的 iPhone 发布会。”\n**常用风格词**：\n- 亲切、温暖、治愈\n- 专业、客观、冷静\n- 幽默、风趣、玩梗\n- 激情、励志、热血\n\n### 3. 负面约束 (Negative Prompting)\n告诉 AI 不要什么，往往比告诉它要什么更有效。\n**Prompt 示例**：\n“请写一段关于[主题]的介绍。要求：\n- 不要使用翻译腔（如‘首先、其次、最后’的僵硬结构）。\n- 不要使用复杂的长难句。\n- 不要使用‘不仅...而且...’这种关联词，尽量用口语化的短句。”\n      "
+      }
+    },
+    {
+      "id": "tools-rec",
+      "title": "自媒体提效工具推荐",
+      "icon": "Wrench",
+      "color": "text-blue-500",
+      "bgColor": "bg-blue-50 dark:bg-blue-950/30",
+      "borderColor": "border-blue-100 dark:border-blue-900",
+      "desc": "工欲善其事，必先利其器，精选提效神器",
+      "content": {
+        "title": "自媒体人必备提效工具箱",
+        "text": "\n### 1. 选题与素材库\n- **今日热榜**：聚合各大平台（微博、知乎、微信等）热搜榜单，快速发现热点。\n- **新榜**：分析各大平台爆款内容和账号数据。\n\n### 2. 写作辅助\n- **Kimi / DeepSeek**：长文总结、资料搜集、初步文案生成。\n- **秘塔写作猫**：文章改写、纠错、润色。\n\n### 3. 图片与视频\n- **Midjourney / Flux**：生成高质量配图。\n- **即梦 (Dreamina) / 可灵**：图片生成视频。\n- **剪映**：强大的移动端/桌面端视频剪辑工具，内置大量模板和 AI 功能。\n\n### 4. 运营管理\n- **Notion**：内容日历、选题库、进度管理。\n      "
+      }
+    }
+  ]
+}

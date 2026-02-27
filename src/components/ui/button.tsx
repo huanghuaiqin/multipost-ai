@@ -1,9 +1,9 @@
 import type { ButtonHTMLAttributes, DetailedHTMLProps } from "react";
 import { cn } from "@/lib/utils";
 
-type ButtonVariant = "primary" | "outline" | "ghost";
+type ButtonVariant = "primary" | "outline" | "ghost" | "link";
 
-type ButtonSize = "default" | "sm" | "lg";
+type ButtonSize = "default" | "sm" | "lg" | "icon";
 
 type ButtonProps = DetailedHTMLProps<
   ButtonHTMLAttributes<HTMLButtonElement>,
@@ -23,12 +23,14 @@ const variantClasses: Record<ButtonVariant, string> = {
     "border border-sky-200 bg-white text-sky-700 hover:bg-sky-50 dark:border-sky-800 dark:bg-slate-950 dark:text-sky-200 dark:hover:bg-slate-900",
   ghost:
     "bg-transparent text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900",
+  link: "text-sky-600 underline-offset-4 hover:underline dark:text-sky-400",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
   default: "h-11 px-5",
   sm: "h-9 px-3 text-xs",
   lg: "h-12 px-7 text-base",
+  icon: "h-10 w-10",
 };
 
 export function Button({
@@ -44,4 +46,3 @@ export function Button({
     />
   );
 }
-

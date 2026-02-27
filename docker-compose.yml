@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: multipost-ai
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # - DEEPSEEK_API_KEY=your_api_key_here
+      # - OPENAI_API_KEY=your_openai_key_here
+    volumes:
+      # Persist data directory if needed (e.g. for news/learning json files)
+      - ./data:/app/data

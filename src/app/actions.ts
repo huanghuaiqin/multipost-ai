@@ -488,6 +488,17 @@ export async function rewriteAction(
     if (youtubeBody) {
       youtubeContentParts.push(youtubeBody);
     }
+    if (youtubeContentParts.length === 0) {
+      if (tiktokContentParts.length > 0) {
+        youtubeContentParts.push(...tiktokContentParts);
+      } else if (weixinContentParts.length > 0) {
+        youtubeContentParts.push(...weixinContentParts);
+      } else if (xhsContentParts.length > 0) {
+        youtubeContentParts.push(...xhsContentParts);
+      } else if (trimmed) {
+        youtubeContentParts.push(trimmed);
+      }
+    }
 
     const baseResults: RewriteResult[] = [
       {
