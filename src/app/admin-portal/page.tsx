@@ -34,10 +34,26 @@ export default function AdminPortal() {
   }, [isAuthenticated]);
 
   const fetchData = async () => {
-    const news = await getNews();
-    setNewsList(news);
-    const learning = await getLearning();
-    setLearningList(learning);
+    try {
+      const news = await getNews();
+      if (Array.isArray(news)) {
+        setNewsList(news);
+      } else {
+        console.error("News data is not an array:", news);
+        setNewsList([]);
+      }
+      
+      const learning = await getLearning();
+      if (Array.isArray(learning)) {
+        setLearningList(learning);
+      } else {
+        console.error("Learning data is not an array:", learning);
+        setLearningList([]);
+      }
+    } catch (err) {
+      console.error("Failed to fetch data:", err);
+      alert("加载数据失败，请检查网络或刷新页面");
+    }
   };
 
   const handleLogin = async (e: FormEvent) => {
