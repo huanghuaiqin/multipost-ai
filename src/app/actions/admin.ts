@@ -14,7 +14,7 @@ export async function verifyAdmin(password: string) {
 
 export async function getNews() {
   try {
-    const db = readDB();
+    const db = await readDB();
     return db.news;
   } catch (error) {
     console.error("Error reading news:", error);
@@ -24,7 +24,7 @@ export async function getNews() {
 
 export async function addNewsItem(item: any) {
   try {
-    const db = readDB();
+    const db = await readDB();
     
     // Assign a new ID (max + 1)
     const maxId = db.news.reduce((max: number, n: any) => Math.max(max, typeof n.id === 'number' ? n.id : 0), 0);
@@ -41,7 +41,7 @@ export async function addNewsItem(item: any) {
     
     db.news.unshift(newItem); // Add to beginning
     
-    writeDB(db);
+    await writeDB(db);
     revalidatePath("/"); // Revalidate homepage
     return { success: true };
   } catch (error) {
@@ -52,9 +52,9 @@ export async function addNewsItem(item: any) {
 
 export async function deleteNewsItem(id: number | string) {
   try {
-    const db = readDB();
+    const db = await readDB();
     db.news = db.news.filter((item) => String(item.id) !== String(id));
-    writeDB(db);
+    await writeDB(db);
     revalidatePath("/");
     return { success: true };
   } catch (error) {
@@ -67,7 +67,7 @@ export async function deleteNewsItem(id: number | string) {
 
 export async function getLearning() {
   try {
-    const db = readDB();
+    const db = await readDB();
     return db.learning;
   } catch (error) {
     console.error("Error reading learning:", error);
@@ -77,7 +77,7 @@ export async function getLearning() {
 
 export async function addLearningItem(item: any) {
   try {
-    const db = readDB();
+    const db = await readDB();
     
     // Generate a simple ID if not present
     const newItem: LearningItem = { 
@@ -92,7 +92,7 @@ export async function addLearningItem(item: any) {
     
     db.learning.unshift(newItem);
     
-    writeDB(db);
+    await writeDB(db);
     revalidatePath("/");
     return { success: true };
   } catch (error) {
@@ -103,9 +103,9 @@ export async function addLearningItem(item: any) {
 
 export async function deleteLearningItem(id: string) {
   try {
-    const db = readDB();
+    const db = await readDB();
     db.learning = db.learning.filter((item) => item.id !== id);
-    writeDB(db);
+    await writeDB(db);
     revalidatePath("/");
     return { success: true };
   } catch (error) {

@@ -5,7 +5,48 @@
 
 建议使用 **云服务器 (VPS)** 或 **Docker** 进行部署。
 
-## 方式一：Docker 容器部署（推荐）
+## 方式三：Vercel 部署 (推荐 Serverless)
+
+如果您希望使用 Vercel 进行免费部署，本项目已支持 **Vercel Postgres** 数据库，无需担心数据丢失问题。
+
+### 1. 准备工作
+- 注册 [Vercel](https://vercel.com/) 账号。
+- 安装 Vercel CLI：`npm install -g vercel`
+
+### 2. 创建数据库
+1. 在 Vercel 控制台创建一个新项目。
+2. 进入项目 Storage 选项卡，点击 "Create Database" -> "Postgres"。
+3. 创建完成后，在设置中找到 `.env.local` 选项卡，复制所有环境变量。
+
+### 3. 配置环境变量
+在本地或 Vercel 项目设置中，添加以下环境变量：
+```bash
+# 启用 Postgres 模式
+USE_POSTGRES=true
+
+# Postgres 连接信息 (从 Vercel 获取)
+POSTGRES_URL=postgres://...
+POSTGRES_PRISMA_URL=postgres://...
+POSTGRES_URL_NON_POOLING=postgres://...
+POSTGRES_USER=...
+POSTGRES_HOST=...
+POSTGRES_PASSWORD=...
+POSTGRES_DATABASE=...
+
+# DeepSeek API (可选)
+DEEPSEEK_API_KEY=sk-xxxx
+```
+
+### 4. 部署
+在项目根目录运行：
+```bash
+vercel
+```
+或者将代码推送到 GitHub，并在 Vercel 中导入仓库进行自动部署。
+
+---
+
+## 方式一：Docker 容器部署（私有化部署推荐）
 
 这是最稳定、最简单的部署方式，只需服务器安装 Docker 即可。
 

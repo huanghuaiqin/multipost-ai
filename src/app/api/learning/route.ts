@@ -2,14 +2,14 @@ import { NextResponse } from 'next/server';
 import { readDB, writeDB, LearningItem } from '@/lib/db';
 
 export async function GET() {
-  const db = readDB();
+  const db = await readDB();
   return NextResponse.json(db.learning);
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const db = readDB();
+    const db = await readDB();
     
     const newItem: LearningItem = {
       id: body.id || `learn-${Date.now()}`,
@@ -23,7 +23,7 @@ export async function POST(request: Request) {
     };
 
     db.learning.unshift(newItem);
-    writeDB(db);
+    await writeDB(db);
 
     return NextResponse.json(newItem, { status: 201 });
   } catch (error) {
@@ -39,7 +39,7 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: 'ID is required' }, { status: 400 });
   }
 
-  const db = readDB();
+  const db = await readDB();
   const initialLength = db.learning.length;
   db.learning = db.learning.filter(item => item.id !== id);
 
@@ -47,6 +47,6 @@ export async function DELETE(request: Request) {
      return NextResponse.json({ error: 'Learning item not found' }, { status: 404 });
   }
 
-  writeDB(db);
+  await writeDB(db);
   return NextResponse.json({ success: true });
 }
