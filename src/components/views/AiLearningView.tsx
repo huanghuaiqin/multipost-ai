@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { BookOpen, Sparkles, Video, TrendingUp, Copy, ArrowRight, UserCog, Wrench, Loader2, LucideIcon } from "lucide-react";
 import * as LucideIcons from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import { getLearning } from "@/app/actions/admin";
 import {
   Card,
@@ -156,25 +158,9 @@ export function AiLearningView({ onSelectPrompt }: AiLearningViewProps) {
           </div>
         ) : (
           <div className="prose prose-slate max-w-none dark:prose-invert">
-            {selectedCard?.content.text?.split('\n').map((line, i) => {
-              if (line.startsWith('### ')) {
-                return <h3 key={i} className="mt-6 mb-3 text-lg font-bold text-slate-900 dark:text-slate-100">{line.replace('### ', '')}</h3>;
-              }
-              if (line.startsWith('- **')) {
-                const parts = line.split('**');
-                return (
-                  <li key={i} className="ml-4 list-disc text-sm leading-7 text-slate-600 dark:text-slate-300">
-                    <strong className="font-semibold text-slate-800 dark:text-slate-200">{parts[1]}</strong>
-                    {parts[2]}
-                  </li>
-                );
-              }
-               if (line.startsWith('**Prompt 示例**')) {
-                return <p key={i} className="mt-4 mb-2 font-semibold text-slate-800 dark:text-slate-200">{line}</p>;
-              }
-              if (line.trim() === '') return <br key={i} />;
-              return <p key={i} className="mb-2 text-sm leading-7 text-slate-600 dark:text-slate-300">{line}</p>;
-            })}
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {selectedCard?.content.text || ""}
+            </ReactMarkdown>
           </div>
         )}
       </Modal>

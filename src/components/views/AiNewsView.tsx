@@ -6,6 +6,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Modal } from "@/components/ui/modal";
 import { cn } from "@/lib/utils";
 
 import { getNews } from "@/app/actions/admin";
@@ -15,6 +16,7 @@ import * as LucideIcons from "lucide-react";
 export function AiNewsView() {
   const [newsItems, setNewsItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedNews, setSelectedNews] = useState<any>(null);
 
   useEffect(() => {
     async function fetchNews() {
@@ -63,7 +65,8 @@ export function AiNewsView() {
         {newsItems.map((item) => (
           <Card
             key={item.id}
-            className="group overflow-hidden transition-all duration-300 hover:shadow-md dark:hover:bg-slate-900/50"
+            className="group cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-md dark:hover:bg-slate-900/50"
+            onClick={() => setSelectedNews(item)}
           >
             <CardContent className="p-0">
               <div className="flex flex-col gap-6 sm:flex-row">
@@ -119,6 +122,37 @@ export function AiNewsView() {
           </Card>
         ))}
       </div>
+
+      <Modal
+        isOpen={!!selectedNews}
+        onClose={() => setSelectedNews(null)}
+        title={selectedNews?.title}
+        className="max-w-3xl"
+      >
+        <div className="space-y-4">
+          <div className="flex items-center gap-2 text-sm text-slate-500">
+            <span
+              className={cn(
+                "rounded-full border px-2 py-0.5 text-xs font-medium",
+                selectedNews?.categoryColor
+              )}
+            >
+              {selectedNews?.category}
+            </span>
+            <div className="flex items-center gap-1">
+              <Calendar className="h-3 w-3" />
+              {selectedNews?.date}
+            </div>
+          </div>
+          
+          <div className="prose prose-slate max-w-none dark:prose-invert">
+            <p className="text-lg leading-relaxed text-slate-700 dark:text-slate-300">
+              {selectedNews?.summary}
+            </p>
+            {/* If we have full content in the future, render it here */}
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }
