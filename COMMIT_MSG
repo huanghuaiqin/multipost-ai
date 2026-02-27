@@ -1,0 +1,5 @@
+feat: Add detail modals with Markdown support for News and Learning views
+
+- Implement Markdown rendering using react-markdown and @tailwindcss/typography
+- Add Modal interactions for viewing full content in AiLearningView and AiNewsView
+- Update global CSS to include typography plugin

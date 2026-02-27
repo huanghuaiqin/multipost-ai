@@ -23,6 +23,7 @@ export default function AdminPortal() {
   // Learning Form State
   const [learningTitle, setLearningTitle] = useState("");
   const [learningDesc, setLearningDesc] = useState("");
+  const [learningCategory, setLearningCategory] = useState("使用教程"); // Default category
   const [learningContentTitle, setLearningContentTitle] = useState("");
   const [learningContentText, setLearningContentText] = useState("");
   const [learningList, setLearningList] = useState<any[]>([]);
@@ -123,6 +124,7 @@ export default function AdminPortal() {
       title: learningTitle,
       desc: learningDesc,
       icon: "Sparkles", // Default icon
+      category: learningCategory,
       content: {
         title: learningContentTitle,
         text: learningContentText,
@@ -136,6 +138,7 @@ export default function AdminPortal() {
       alert("AI 学习内容发布成功！");
       setLearningTitle("");
       setLearningDesc("");
+      setLearningCategory("使用教程");
       setLearningContentTitle("");
       setLearningContentText("");
       fetchData();
@@ -301,7 +304,19 @@ export default function AdminPortal() {
                     />
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">详情页标题</label>
+                    <label className="text-sm font-medium">分类</label>
+                    <select
+                      className="w-full p-2 border rounded-md dark:bg-slate-900 dark:border-slate-800"
+                      value={learningCategory}
+                      onChange={(e) => setLearningCategory(e.target.value)}
+                    >
+                      <option value="使用教程">使用教程</option>
+                      <option value="软件推荐">软件推荐</option>
+                      <option value="学习资料">学习资料</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">详情页标题</label>>
                     <input
                       className="w-full p-2 border rounded-md dark:bg-slate-900 dark:border-slate-800"
                       value={learningContentTitle}

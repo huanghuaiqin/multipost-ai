@@ -25,6 +25,7 @@ export interface LearningItem {
   bgColor: string;
   borderColor: string;
   desc: string;
+  category: string; // Added category
   content: {
     title: string;
     text?: string;
@@ -66,6 +67,7 @@ async function ensureTables() {
       bg_color TEXT,
       border_color TEXT,
       "desc" TEXT NOT NULL,
+      category TEXT, 
       content JSONB NOT NULL,
       created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
     );
@@ -100,6 +102,7 @@ export async function readDBPostgres(): Promise<DB> {
       bgColor: row.bg_color,
       borderColor: row.border_color,
       desc: row.desc,
+      category: row.category || '学习资料', // Default for existing rows
       content: row.content
     })) as LearningItem[];
 
@@ -131,8 +134,8 @@ export async function writeDBPostgres(data: DB) {
     // Insert Learning
     for (const item of data.learning) {
       await sql`
-        INSERT INTO learning (id, title, icon, color, bg_color, border_color, "desc", content)
-        VALUES (${item.id}, ${item.title}, ${item.icon}, ${item.color}, ${item.bgColor}, ${item.borderColor}, ${item.desc}, ${JSON.stringify(item.content)})
+        INSERT INTO learning (id, title, icon, color, bg_color, border_color, "desc", category, content)
+        VALUES (${item.id}, ${item.title}, ${item.icon}, ${item.color}, ${item.bgColor}, ${item.borderColor}, ${item.desc}, ${item.category || '学习资料'}, ${JSON.stringify(item.content)})
       `;
     }
   } catch (error) {

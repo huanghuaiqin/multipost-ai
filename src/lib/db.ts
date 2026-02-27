@@ -25,6 +25,7 @@ export interface LearningItem {
   bgColor: string;
   borderColor: string;
   desc: string;
+  category: string; // Added category
   content: {
     title: string;
     text?: string;

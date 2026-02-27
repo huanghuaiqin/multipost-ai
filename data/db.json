@@ -36,6 +36,62 @@
   ],
   "learning": [
     {
+      "id": "deepseek-desktop",
+      "title": "DeepSeek 桌面版",
+      "icon": "Download",
+      "color": "text-blue-600",
+      "bgColor": "bg-blue-50 dark:bg-blue-950/30",
+      "borderColor": "border-blue-100 dark:border-blue-900",
+      "desc": "本地运行 DeepSeek 大模型，隐私安全，无需联网即可使用",
+      "category": "软件推荐",
+      "content": {
+        "title": "DeepSeek 桌面版安装与使用指南",
+        "text": "# DeepSeek 桌面版：本地 AI 生产力工具\n\nDeepSeek 桌面版允许你在本地计算机上运行强大的 DeepSeek 系列模型（包括 DeepSeek-Coder 和 DeepSeek-LLM）。\n\n## 核心优势\n\n1.  **隐私安全**：所有数据都在本地处理，不会上传到云端，特别适合处理敏感文档或代码。\n2.  **离线可用**：下载模型后，无需网络连接即可随时使用。\n3.  **零延迟**：本地推理，响应速度取决于你的硬件性能，不受网络波动影响。\n4.  **免费开源**：基于开源模型构建，无订阅费用。\n\n## 安装步骤\n\n1.  **下载安装包**：访问 [DeepSeek 官网](https://www.deepseek.com) 下载适用于 Windows/Mac/Linux 的桌面客户端。\n2.  **安装 Ollama（后端）**：桌面版通常依赖 Ollama 作为推理后端。安装包会自动检测并引导安装。\n3.  **选择模型**：\n    *   **DeepSeek-R1-Distill-Llama-8B**：适合大多数笔记本电脑（推荐 16GB 内存）。\n    *   **DeepSeek-R1-Distill-Qwen-32B**：适合高性能台式机（推荐 32GB+ 内存 + 独立显卡）。\n    *   **DeepSeek-Coder-V2**：专为代码生成优化。\n\n## 使用技巧\n\n*   **代码补全**：在 VS Code 中安装 DeepSeek 插件，连接本地 API 端口（通常是 `localhost:11434`），即可享受免费的 Copilot 级体验。\n*   **文档分析**：直接将 PDF/Word 文档拖入对话框，让模型进行摘要或问答。\n"
+      }
+    },
+    {
+      "id": "dify-ai",
+      "title": "Dify 智能助手",
+      "icon": "Bot",
+      "color": "text-indigo-600",
+      "bgColor": "bg-indigo-50 dark:bg-indigo-950/30",
+      "borderColor": "border-indigo-100 dark:border-indigo-900",
+      "desc": "开源 LLM 应用开发平台，零代码构建你的 AI Agent",
+      "category": "软件推荐",
+      "content": {
+        "title": "Dify：下一代 LLM 应用开发平台",
+        "text": "# Dify：让 AI 应用开发触手可及\n\nDify 是一个开源的 LLM 应用开发平台，旨在让开发者和非技术人员都能轻松构建生产级的 AI 应用。\n\n## 为什么选择 Dify？\n\n*   **模型中立**：支持接入 OpenAI、Anthropic、DeepSeek、通义千问等主流模型，随心切换。\n*   **可视化编排**：通过拖拽式的 Prompt 编排和工作流（Workflow）设计，构建复杂的 Agent 逻辑。\n*   **RAG 引擎**：内置强大的知识库检索增强生成（RAG）能力，支持 PDF、TXT、Markdown 等多种格式文档上传与自动分段。\n*   **API 发布**：一键将你的 AI 应用发布为 API，集成到网站或微信小程序中。\n\n## 快速上手\n\n1.  **注册/部署**：可以使用 Dify 云端版（有免费额度）或通过 Docker 在本地一键部署。\n2.  **创建应用**：选择“聊天助手”或“文本生成应用”。\n3.  **编写提示词**：在编排页面输入 System Prompt，定义 AI 的角色和能力。\n4.  **添加知识库**：上传你的业务文档，Dify 会自动清洗并建立索引。\n5.  **发布与分享**：点击发布，获取公开访问链接或 API Key。\n\n## 典型场景\n\n*   企业内部知识问答助手\n*   智能客服机器人\n*   个性化文章生成器\n*   代码审查工具\n"
+      }
+    },
+    {
+      "id": "deepseek-r1-guide",
+      "title": "DeepSeek R1 满血版使用秘籍",
+      "icon": "BookOpen",
+      "color": "text-purple-600",
+      "bgColor": "bg-purple-50 dark:bg-purple-950/30",
+      "borderColor": "border-purple-100 dark:border-purple-900",
+      "desc": "解锁 DeepSeek R1 的推理潜力，复杂任务处理指南",
+      "category": "使用教程",
+      "content": {
+        "title": "DeepSeek R1 满血版深度使用指南",
+        "text": "# DeepSeek R1：开源推理模型新标杆\n\nDeepSeek R1 是一款主打“推理能力”的模型，在数学解题、逻辑推理和代码生成方面表现惊人。如何发挥它的最大潜力？\n\n## 核心特性\n\n*   **思维链（Chain of Thought）**：R1 会在输出结果前先进行“思考”，展示完整的推理过程。这对于检查逻辑漏洞非常有帮助。\n*   **长上下文支持**：支持超长文本输入，适合处理长篇论文或整本书籍。\n\n## 提示词（Prompt）策略\n\n与 GPT-4 不同，R1 对提示词有特定的偏好：\n\n1.  **“请一步步思考”**：虽然 R1 默认会思考，但显式加上这句话能进一步强化其逻辑严密性。\n2.  **少即是多**：对于 R1，不需要过于复杂的 Prompt 工程（如角色扮演、情感勒索），直接清晰地描述问题往往效果最好。\n3.  **提供示例（Few-Shot）**：在处理特定格式输出时，提供 1-2 个示例能显著提高准确率。\n\n## 典型用例\n\n### 1. 复杂数学题求解\n直接输入题目，R1 会像老师一样写出解题步骤，而不是直接给答案。\n\n### 2. 代码重构与解释\n输入一段晦涩的代码，要求 R1：“解释这段代码的功能，并提出优化建议。”它会深入分析算法复杂度并给出重构后的代码。\n\n### 3. 逻辑推理谜题\n尝试输入：“房间里有 3 个人，每个人头上都戴着一顶帽子...”这类逻辑题，看 R1 如何抽丝剥茧。\n"
+      }
+    },
+    {
+      "id": "2026-media-tools",
+      "title": "2026 自媒体 AI 提效工具清单",
+      "icon": "List",
+      "color": "text-emerald-600",
+      "bgColor": "bg-emerald-50 dark:bg-emerald-950/30",
+      "borderColor": "border-emerald-100 dark:border-emerald-900",
+      "desc": "涵盖文案、作图、视频全流程的 AI 效率神器",
+      "category": "学习资料",
+      "content": {
+        "title": "2026 年自媒体 AI 提效工具终极清单",
+        "text": "# 自媒体人必备：2026 AI 工具地图\n\n在 AI 时代，善用工具是自媒体人拉开差距的关键。以下是精选的 2026 年主流 AI 工具清单，按工作流分类。\n\n## 一、 选题与灵感\n\n*   **Exploding Topics**：发现尚未爆发的趋势话题，抢占先机。\n*   **AnswerThePublic**：可视化展示用户在搜索引擎上问什么，精准捕捉用户痛点。\n*   **Perplexity**：AI 搜索神器，快速调研行业现状，提供带引用的可靠信源。\n\n## 二、 文案写作\n\n*   **DeepSeek-V3 / R1**：目前中文写作能力最强的模型之一，适合写长文、脚本。\n*   **Claude 3.5 Sonnet**：文风自然，不仅像人，而且有“灵魂”，适合情感类文案。\n*   **Jasper AI**：专为营销文案设计，内置多种经过验证的营销框架（AIDA, PAS 等）。\n\n## 三、 图片设计\n\n*   **Midjourney V6**：依然是画质天花板，适合生成封面图、插画。\n*   **Flux.1**：开源界的黑马，生成文字（Typography）能力极强，海报设计首选。\n*   **Canva AI**：一键生成社交媒体图片，支持魔术编辑（Magic Edit）。\n\n## 四、 视频制作\n\n*   **Runway Gen-3**：视频生成领域的标杆，画面可控性高。\n*   **Kling（可灵）**：国产之光，生成长视频（最长 3 分钟）能力出色，动作流畅。\n*   **CapCut（剪映）桌面版**：智能剪辑功能越来越强，支持一键成片、数字人播报。\n\n## 五、 声音处理\n\n*   **ElevenLabs**：最逼真的 AI 语音合成，支持声音克隆。\n*   **Suno / Udio**：AI 音乐生成，为视频配上独一无二的 BGM。\n"
+      }
+    },
+    {
       "id": "xhs-prompt",
       "title": "爆款小红书 Prompt 秘籍",
       "icon": "Sparkles",
@@ -43,6 +99,7 @@
       "bgColor": "bg-rose-50 dark:bg-rose-950/30",
       "borderColor": "border-rose-100 dark:border-rose-900",
       "desc": "一键复制高转化提示词，轻松搞定标题与正文",
+      "category": "使用教程",
       "content": {
         "title": "小红书爆款 Prompt 秘籍",
         "items": [
@@ -73,22 +130,10 @@
       "bgColor": "bg-amber-50 dark:bg-amber-950/30",
       "borderColor": "border-amber-100 dark:border-amber-900",
       "desc": "告别 AI 味，三步调教出专属你的写作风格",
+      "category": "使用教程",
       "content": {
         "title": "AI 语气调教指南",
         "text": "\n### 1. 投喂样文 (Few-Shot Prompting)\n最直接的方法是给 AI 看你以前写的文章。\n**Prompt 示例**：\n“请模仿以下文字的风格（语气、用词习惯、句式长短），为我写一段关于[新主题]的内容。\n【样文 1】：......\n【样文 2】：......”\n\n### 2. 角色设定与风格描述\n明确告诉 AI 你是谁，以及你想要的风格关键词。\n**Prompt 示例**：\n“你是一个[资深科技博主]，你的写作风格是[犀利、幽默、喜欢用反讽]。请用这种风格评论一下最新的 iPhone 发布会。”\n**常用风格词**：\n- 亲切、温暖、治愈\n- 专业、客观、冷静\n- 幽默、风趣、玩梗\n- 激情、励志、热血\n\n### 3. 负面约束 (Negative Prompting)\n告诉 AI 不要什么，往往比告诉它要什么更有效。\n**Prompt 示例**：\n“请写一段关于[主题]的介绍。要求：\n- 不要使用翻译腔（如‘首先、其次、最后’的僵硬结构）。\n- 不要使用复杂的长难句。\n- 不要使用‘不仅...而且...’这种关联词，尽量用口语化的短句。”\n      "
-      }
-    },
-    {
-      "id": "tools-rec",
-      "title": "自媒体提效工具推荐",
-      "icon": "Wrench",
-      "color": "text-blue-500",
-      "bgColor": "bg-blue-50 dark:bg-blue-950/30",
-      "borderColor": "border-blue-100 dark:border-blue-900",
-      "desc": "工欲善其事，必先利其器，精选提效神器",
-      "content": {
-        "title": "自媒体人必备提效工具箱",
-        "text": "\n### 1. 选题与素材库\n- **今日热榜**：聚合各大平台（微博、知乎、微信等）热搜榜单，快速发现热点。\n- **新榜**：分析各大平台爆款内容和账号数据。\n\n### 2. 写作辅助\n- **Kimi / DeepSeek**：长文总结、资料搜集、初步文案生成。\n- **秘塔写作猫**：文章改写、纠错、润色。\n\n### 3. 图片与视频\n- **Midjourney / Flux**：生成高质量配图。\n- **即梦 (Dreamina) / 可灵**：图片生成视频。\n- **剪映**：强大的移动端/桌面端视频剪辑工具，内置大量模板和 AI 功能。\n\n### 4. 运营管理\n- **Notion**：内容日历、选题库、进度管理。\n      "
       }
     }
   ]

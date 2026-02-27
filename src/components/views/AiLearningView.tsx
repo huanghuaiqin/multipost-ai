@@ -23,11 +23,12 @@ export interface AiLearningViewProps {
 interface LearningCard {
   id: string;
   title: string;
-  icon: LucideIcon;
+  icon: any; // Changed from LucideIcon to any to avoid type issues with dynamic import
   color: string;
   bgColor: string;
   borderColor: string;
   desc: string;
+  category: string;
   content: {
     title: string;
     items?: {
@@ -41,6 +42,7 @@ interface LearningCard {
 export function AiLearningView({ onSelectPrompt }: AiLearningViewProps) {
   const [learningCards, setLearningCards] = useState<LearningCard[]>([]);
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState("全部");
 
   useEffect(() => {
     async function fetchLearning() {
@@ -61,6 +63,19 @@ export function AiLearningView({ onSelectPrompt }: AiLearningViewProps) {
   }, []);
 
   const [selectedCardId, setSelectedCardId] = useState<string | null>(null);
+
+  const filteredCards = activeTab === "全部" 
+    ? learningCards 
+    : learningCards.filter(card => {
+        // Map frontend tabs to backend categories if needed, or use exact match
+        // '教程' -> '使用教程'
+        // '软件' -> '软件推荐'
+        // '资料' -> '学习资料'
+        if (activeTab === "教程") return card.category === "使用教程";
+        if (activeTab === "软件") return card.category === "软件推荐";
+        if (activeTab === "资料") return card.category === "学习资料";
+        return card.category === activeTab;
+      });
 
   if (loading) {
     return (
@@ -95,8 +110,28 @@ export function AiLearningView({ onSelectPrompt }: AiLearningViewProps) {
         </p>
       </header>
 
+      {/* Category Tabs */}
+      <div className="flex justify-center w-full">
+        <div className="inline-flex h-10 items-center justify-center rounded-md bg-slate-100 p-1 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
+          {["全部", "教程", "软件", "资料"].map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              className={cn(
+                "inline-flex items-center justify-center whitespace-nowrap rounded-sm px-3 py-1.5 text-sm font-medium ring-offset-white transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-950 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 dark:ring-offset-slate-950 dark:focus-visible:ring-slate-300",
+                activeTab === tab
+                  ? "bg-white text-slate-950 shadow-sm dark:bg-slate-950 dark:text-slate-50"
+                  : "hover:bg-slate-200/50 dark:hover:bg-slate-800/50 hover:text-slate-900 dark:hover:text-slate-50"
+              )}
+            >
+              {tab}
+            </button>
+          ))}
+        </div>
+      </div>
+
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {learningCards.map((card) => (
+        {filteredCards.map((card) => (
           <Card
             key={card.id}
             className={cn(
