@@ -1,32 +1,58 @@
 import { NextResponse } from 'next/server';
-import { readDB, writeDB, LearningItem } from '@/lib/db';
+import { prisma } from '@/lib/prisma';
 
 export async function GET() {
-  const db = await readDB();
-  return NextResponse.json(db.learning);
+  try {
+    const learning = await prisma.learning.findMany({
+      orderBy: { createdAt: 'desc' },
+    });
+    
+    // Transform content string back to object if needed for frontend compatibility
+    const learningWithObjectContent = learning.map(item => ({
+      ...item,
+      // Frontend expects content object for now, but we are moving to Markdown string.
+      // We'll return it as is, and update frontend components to handle it.
+    }));
+    
+    return NextResponse.json(learningWithObjectContent);
+  } catch (error) {
+    console.error('Error fetching learning:', error);
+    return NextResponse.json({ error: 'Failed to fetch learning items' }, { status: 500 });
+  }
 }
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const db = await readDB();
     
-    const newItem: LearningItem = {
-      id: body.id || `learn-${Date.now()}`,
-      title: body.title,
-      icon: body.icon || 'BookOpen',
-      color: body.color || 'text-purple-500',
-      bgColor: body.bgColor || 'bg-purple-50 dark:bg-purple-950/30',
-      borderColor: body.borderColor || 'border-purple-100 dark:border-purple-900',
-      desc: body.desc,
-      content: body.content || { title: body.title, text: '' }
-    };
+    // Determine content string
+    let contentString = '';
+    if (typeof body.content === 'string') {
+      contentString = body.content;
+    } else if (body.content && typeof body.content === 'object') {
+      if (body.content.text) {
+        contentString = body.content.text;
+      } else {
+        contentString = JSON.stringify(body.content);
+      }
+    }
 
-    db.learning.unshift(newItem);
-    await writeDB(db);
+    const newItem = await prisma.learning.create({
+      data: {
+        title: body.title,
+        desc: body.desc,
+        category: body.category || '使用教程',
+        content: contentString,
+        icon: body.icon || 'BookOpen',
+        color: body.color || 'text-purple-500',
+        bgColor: body.bgColor || 'bg-purple-50 dark:bg-purple-950/30',
+        borderColor: body.borderColor || 'border-purple-100 dark:border-purple-900',
+      }
+    });
 
     return NextResponse.json(newItem, { status: 201 });
   } catch (error) {
+    console.error('Error creating learning:', error);
     return NextResponse.json({ error: 'Failed to create learning item' }, { status: 500 });
   }
 }
@@ -39,14 +65,13 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: 'ID is required' }, { status: 400 });
   }
 
-  const db = await readDB();
-  const initialLength = db.learning.length;
-  db.learning = db.learning.filter(item => item.id !== id);
-
-  if (db.learning.length === initialLength) {
-     return NextResponse.json({ error: 'Learning item not found' }, { status: 404 });
+  try {
+    await prisma.learning.delete({
+      where: { id: String(id) },
+    });
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting learning:', error);
+    return NextResponse.json({ error: 'Learning item not found or failed to delete' }, { status: 404 });
   }
-
-  await writeDB(db);
-  return NextResponse.json({ success: true });
 }

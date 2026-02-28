@@ -1,6 +1,8 @@
 "use client";
 
-import { Newspaper, TrendingUp, Zap, Video, Calendar, ArrowRight } from "lucide-react";
+import { Newspaper, TrendingUp, Zap, Video, Calendar, ArrowRight, Sparkles } from "lucide-react";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
 import {
   Card,
   CardContent,
@@ -61,67 +63,81 @@ export function AiNewsView() {
         </p>
       </header>
 
-      <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
-        {newsItems.map((item) => (
-          <Card
-            key={item.id}
-            className="group cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-md dark:hover:bg-slate-900/50"
-            onClick={() => setSelectedNews(item)}
-          >
-            <CardContent className="p-0">
-              <div className="flex flex-col gap-6 sm:flex-row">
-                {/* 图片预览区 (使用 CSS 渐变和图标模拟) */}
-                <div
-                  className={cn(
-                    "flex h-48 w-full shrink-0 items-center justify-center sm:h-auto sm:w-48 md:w-64",
-                    item.imageColor
-                  )}
-                >
-                  {(() => {
-                    const IconComponent = getIcon(item.icon);
-                    return <IconComponent className={cn("h-12 w-12 opacity-50", item.iconColor)} />;
-                  })()}
-                </div>
+      {newsItems.length > 0 ? (
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-6">
+          {newsItems.map((item) => (
+            <Card
+              key={item.id}
+              className="group cursor-pointer overflow-hidden transition-all duration-300 hover:shadow-md dark:hover:bg-slate-900/50"
+              onClick={() => setSelectedNews(item)}
+            >
+              <CardContent className="p-0">
+                <div className="flex flex-col gap-6 sm:flex-row">
+                  {/* 图片预览区 (使用 CSS 渐变和图标模拟) */}
+                  <div
+                    className={cn(
+                      "flex h-48 w-full shrink-0 items-center justify-center sm:h-auto sm:w-48 md:w-64",
+                      item.imageColor
+                    )}
+                  >
+                    {(() => {
+                      const IconComponent = getIcon(item.icon);
+                      return <IconComponent className={cn("h-12 w-12 opacity-50", item.iconColor)} />;
+                    })()}
+                  </div>
 
-                {/* 内容区 */}
-                <div className="flex flex-1 flex-col justify-between p-6 sm:pl-0">
-                  <div className="space-y-3">
-                    <div className="flex items-center gap-2">
-                      <span
-                        className={cn(
-                          "rounded-full border px-2 py-0.5 text-xs font-medium",
-                          item.categoryColor
-                        )}
-                      >
-                        {item.category}
-                      </span>
-                      <div className="flex items-center gap-1 text-xs text-slate-500">
-                        <Calendar className="h-3 w-3" />
-                        {item.date}
+                  {/* 内容区 */}
+                  <div className="flex flex-1 flex-col justify-between p-6 sm:pl-0">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={cn(
+                            "rounded-full border px-2 py-0.5 text-xs font-medium",
+                            item.categoryColor
+                          )}
+                        >
+                          {item.category}
+                        </span>
+                        <div className="flex items-center gap-1 text-xs text-slate-500">
+                          <Calendar className="h-3 w-3" />
+                          {item.date}
+                        </div>
                       </div>
+                      <h3 className="text-xl font-semibold leading-tight text-slate-900 group-hover:text-sky-600 dark:text-slate-50 dark:group-hover:text-sky-400">
+                        {item.title}
+                      </h3>
+                      <p className="line-clamp-2 text-sm text-slate-600 dark:text-slate-400">
+                        {item.summary}
+                      </p>
                     </div>
-                    <h3 className="text-xl font-semibold leading-tight text-slate-900 group-hover:text-sky-600 dark:text-slate-50 dark:group-hover:text-sky-400">
-                      {item.title}
-                    </h3>
-                    <p className="line-clamp-2 text-sm text-slate-600 dark:text-slate-400">
-                      {item.summary}
-                    </p>
-                  </div>
-                  
-                  <div className="mt-4 flex items-center justify-end sm:justify-start">
-                    <Button
-                      variant="link"
-                      className="h-auto p-0 text-slate-500 hover:text-sky-600 dark:text-slate-400 dark:hover:text-sky-400"
-                    >
-                      阅读全文 <ArrowRight className="ml-1 h-3 w-3" />
-                    </Button>
+                    
+                    <div className="mt-4 flex items-center justify-end sm:justify-start">
+                      <Button
+                        variant="link"
+                        className="h-auto p-0 text-slate-500 hover:text-sky-600 dark:text-slate-400 dark:hover:text-sky-400"
+                      >
+                        阅读全文 <ArrowRight className="ml-1 h-3 w-3" />
+                      </Button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      ) : (
+        <div className="flex flex-col items-center justify-center py-16 text-center animate-fade-in-up">
+          <div className="mb-4 rounded-full bg-slate-100 p-6 dark:bg-slate-800">
+            <Sparkles className="h-10 w-10 text-slate-400" />
+          </div>
+          <h3 className="text-lg font-medium text-slate-900 dark:text-slate-50">
+            内容正在准备中
+          </h3>
+          <p className="mt-2 text-sm text-slate-500 dark:text-slate-400">
+            我们正在为您收集全球最新的 AI 资讯，敬请期待！
+          </p>
+        </div>
+      )}
 
       <Modal
         isOpen={!!selectedNews}
@@ -146,10 +162,9 @@ export function AiNewsView() {
           </div>
           
           <div className="prose prose-slate max-w-none dark:prose-invert">
-            <p className="text-lg leading-relaxed text-slate-700 dark:text-slate-300">
-              {selectedNews?.summary}
-            </p>
-            {/* If we have full content in the future, render it here */}
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {selectedNews?.summary || ""}
+            </ReactMarkdown>
           </div>
         </div>
       </Modal>

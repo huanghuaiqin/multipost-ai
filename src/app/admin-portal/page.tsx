@@ -24,8 +24,7 @@ export default function AdminPortal() {
   const [learningTitle, setLearningTitle] = useState("");
   const [learningDesc, setLearningDesc] = useState("");
   const [learningCategory, setLearningCategory] = useState("使用教程"); // Default category
-  const [learningContentTitle, setLearningContentTitle] = useState("");
-  const [learningContentText, setLearningContentText] = useState("");
+  const [learningContent, setLearningContent] = useState("");
   const [learningList, setLearningList] = useState<any[]>([]);
 
   useEffect(() => {
@@ -125,10 +124,7 @@ export default function AdminPortal() {
       desc: learningDesc,
       icon: "Sparkles", // Default icon
       category: learningCategory,
-      content: {
-        title: learningContentTitle,
-        text: learningContentText,
-      }
+      content: learningContent
     };
 
     const result = await addLearningItem(newItem);
@@ -139,8 +135,7 @@ export default function AdminPortal() {
       setLearningTitle("");
       setLearningDesc("");
       setLearningCategory("使用教程");
-      setLearningContentTitle("");
-      setLearningContentText("");
+      setLearningContent("");
       fetchData();
     } else {
       alert("发布失败：" + result.error);
@@ -243,12 +238,13 @@ export default function AdminPortal() {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">摘要</label>
+                    <label className="text-sm font-medium">文章详情 (Markdown)</label>
                     <textarea
-                      className="w-full p-2 border rounded-md h-24 dark:bg-slate-900 dark:border-slate-800"
+                      className="w-full p-2 border rounded-md h-96 dark:bg-slate-900 dark:border-slate-800 font-mono text-sm"
                       value={newsSummary}
                       onChange={(e) => setNewsSummary(e.target.value)}
                       required
+                      placeholder="支持 Markdown 格式..."
                     />
                   </div>
                   <Button type="submit" disabled={loading}>
@@ -316,20 +312,11 @@ export default function AdminPortal() {
                     </select>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium">详情页标题</label>>
-                    <input
-                      className="w-full p-2 border rounded-md dark:bg-slate-900 dark:border-slate-800"
-                      value={learningContentTitle}
-                      onChange={(e) => setLearningContentTitle(e.target.value)}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">详情页内容 (Markdown)</label>
+                    <label className="text-sm font-medium">文章详情 (Markdown)</label>
                     <textarea
                       className="w-full p-2 border rounded-md h-32 dark:bg-slate-900 dark:border-slate-800"
-                      value={learningContentText}
-                      onChange={(e) => setLearningContentText(e.target.value)}
+                      value={learningContent}
+                      onChange={(e) => setLearningContent(e.target.value)}
                       required
                     />
                   </div>

@@ -1,0 +1,42 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+
+model News {
+  id            String   @id @default(cuid())
+  title         String
+  summary       String   @db.Text
+  date          String
+  category      String
+  categoryColor String?  @map("category_color")
+  icon          String?
+  iconColor     String?  @map("icon_color")
+  imageColor    String?  @map("image_color")
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@map("news")
+}
+
+model Learning {
+  id          String   @id @default(cuid())
+  title       String
+  icon        String?
+  color       String?
+  bgColor     String?  @map("bg_color")
+  borderColor String?  @map("border_color")
+  desc        String
+  category    String   @default("使用教程")
+  content     String   @db.Text // LongText for Markdown
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("learning")
+}
