@@ -83,7 +83,7 @@ export async function POST(request: Request) {
     } catch (e) {
       console.error('Failed to parse AI response:', e);
       // Fallback regex
-      const match = content.match(/\{.*\}/s);
+      const match = content.match(/\{[\s\S]*\}/);
       if (match) {
         try { result = JSON.parse(match[0]); } catch (e2) {}
       }

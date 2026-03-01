@@ -96,7 +96,7 @@ export async function POST(request: Request) {
         } catch (parseError) {
           console.error('Failed to parse recommendation JSON:', parseError, content);
           // Fallback: try to extract JSON array via regex
-          const match = content.match(/\[.*\]/s);
+          const match = content.match(/\[[\s\S]*\]/);
           if (match) {
             try {
               recommendations = JSON.parse(match[0]);
@@ -159,7 +159,7 @@ export async function POST(request: Request) {
         } catch (parseError) {
           console.error('Failed to parse generation JSON:', parseError, content);
           // Fallback regex
-          const match = content.match(/\{.*\}/s);
+          const match = content.match(/\{[\s\S]*\}/);
           if (match) {
             try { result = JSON.parse(match[0]); } catch (e2) {}
           }
