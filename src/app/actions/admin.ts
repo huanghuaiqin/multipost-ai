@@ -66,11 +66,23 @@ export async function getLearning() {
   try {
     const learning = await prisma.learning.findMany({
       orderBy: { createdAt: 'desc' },
+      select: {
+        id: true,
+        title: true,
+        desc: true,
+        category: true,
+        icon: true,
+        color: true,
+        bgColor: true,
+        borderColor: true,
+        createdAt: true,
+        // Exclude content to keep list lightweight
+      }
     });
     
     // Transform content string back to object if needed for frontend compatibility
     // However, frontend should be updated to handle string content (Markdown)
-    return learning.map(item => ({
+    return learning.map((item: any) => ({
       ...item,
       // Frontend expects content object for now, but we are moving to Markdown string.
       // We'll return it as is, and update frontend components to handle it.
@@ -81,10 +93,10 @@ export async function getLearning() {
   }
 }
 
-export async function getLearningItem(id: string) {
+export async function getLearningItem(id: string | number) {
   try {
     const item = await prisma.learning.findUnique({
-      where: { id },
+      where: { id: String(id) },
     });
     return item;
   } catch (error) {
@@ -128,7 +140,7 @@ export async function addLearningItem(item: any) {
   }
 }
 
-export async function deleteLearningItem(id: string) {
+export async function deleteLearningItem(id: number | string) {
   try {
     await prisma.learning.delete({
       where: { id: String(id) },

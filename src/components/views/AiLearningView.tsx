@@ -1,10 +1,12 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { BookOpen, Sparkles, Video, TrendingUp, Copy, ArrowRight, UserCog, Wrench, Loader2, LucideIcon } from "lucide-react";
+import { BookOpen, Sparkles, Video, TrendingUp, Copy, ArrowRight, UserCog, Wrench, Loader2, LucideIcon, Calendar, Check } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { getLearning, getLearningItem } from "@/app/actions/admin";
 import {
   Card,
@@ -15,6 +17,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Modal } from "@/components/ui/modal";
 import { cn } from "@/lib/utils";
+
+const getCategoryIcon = (category: string) => {
+  switch (category) {
+    case "软件推荐": return "🔧";
+    case "使用教程": return "📖";
+    case "学习资料": return "🚀";
+    default: return "✨";
+  }
+};
 
 export interface AiLearningViewProps {
   onSelectPrompt?: (prompt: string) => void;
@@ -32,6 +43,44 @@ interface LearningCard {
   content: string; // Content is stored as a string (Markdown or JSON) in DB
   createdAt?: Date;
 }
+
+const CodeBlock = ({ node, inline, className, children, ...props }: any) => {
+  const [copied, setCopied] = useState(false);
+  const match = /language-(\w+)/.exec(className || '');
+  
+  const handleCopy = () => {
+    navigator.clipboard.writeText(String(children));
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  return !inline && match ? (
+    <div className="relative group rounded-lg overflow-hidden my-6 shadow-md border border-slate-200 dark:border-slate-800">
+      <div className="absolute right-3 top-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+        <button
+          onClick={handleCopy}
+          className="p-1.5 rounded-md bg-slate-700/80 hover:bg-slate-600 text-slate-300 hover:text-white transition-colors backdrop-blur-sm"
+          title="复制"
+        >
+          {copied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5" />}
+        </button>
+      </div>
+      <SyntaxHighlighter
+        style={vscDarkPlus}
+        language={match[1]}
+        PreTag="div"
+        customStyle={{ margin: 0, padding: '1.5rem', fontSize: '0.9rem', lineHeight: '1.6' }}
+        {...props}
+      >
+        {String(children).replace(/\n$/, '')}
+      </SyntaxHighlighter>
+    </div>
+  ) : (
+    <code className={cn("bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-sm text-rose-500 dark:text-rose-400 font-mono font-medium", className)} {...props}>
+      {children}
+    </code>
+  );
+};
 
 export function AiLearningView({ onSelectPrompt }: AiLearningViewProps) {
   const [learningCards, setLearningCards] = useState<LearningCard[]>([]);
@@ -97,9 +146,9 @@ export function AiLearningView({ onSelectPrompt }: AiLearningViewProps) {
   const filteredCards = activeTab === "全部" 
     ? learningCards 
     : learningCards.filter(card => {
-        if (activeTab === "AI 软件") return card.category === "软件推荐";
-        if (activeTab === "使用教程") return card.category === "使用教程";
-        if (activeTab === "学习资料") return card.category === "学习资料";
+        if (activeTab === "实用软件") return card.category === "软件推荐";
+        if (activeTab === "提示词教程") return card.category === "使用教程";
+        if (activeTab === "提效资料") return card.category === "学习资料";
         return card.category === activeTab;
       });
 
@@ -118,22 +167,39 @@ export function AiLearningView({ onSelectPrompt }: AiLearningViewProps) {
   // Helper to parse content
   let parsedContent: any = null;
   let isJsonContent = false;
-  
+  let rawModalContent = displayItem?.content || "";
+
   if (displayItem) {
     try {
-      // Try to parse as JSON for legacy/special cards
-      if (displayItem.content && displayItem.content.trim().startsWith('{')) {
-        parsedContent = JSON.parse(displayItem.content);
+      const trimmedContent = displayItem.content?.trim() || "";
+      
+      if (trimmedContent.startsWith('{')) {
+        // Try to parse as JSON for legacy/special cards
+        parsedContent = JSON.parse(trimmedContent);
         isJsonContent = true;
+      } else if (trimmedContent.startsWith('"') && trimmedContent.endsWith('"')) {
+        // Handle double-encoded strings (e.g. "\"# Title...\"")
+        try {
+          rawModalContent = JSON.parse(trimmedContent);
+        } catch (e) {
+          // Fallback: manually unescape if JSON.parse fails
+          rawModalContent = trimmedContent.slice(1, -1).replace(/\\n/g, '\n');
+        }
+      } else {
+        // Handle potentially unescaped newlines in raw strings
+        // This is crucial for strings that aren't JSON encoded but contain literal \n characters
+        rawModalContent = trimmedContent.replace(/\\n/g, '\n');
       }
     } catch (e) {
       // Not JSON, treat as Markdown string
+      // Even if JSON parsing fails, we should try to unescape newlines
+      rawModalContent = (displayItem.content || "").replace(/\\n/g, '\n');
       isJsonContent = false;
     }
   }
 
   const modalTitle = isJsonContent ? parsedContent?.title : displayItem?.title;
-  const modalContentText = isJsonContent ? (parsedContent?.text || "") : (displayItem?.content || "");
+  const modalContentText = isJsonContent ? (parsedContent?.text || "") : rawModalContent;
   const modalItems = isJsonContent ? parsedContent?.items : null;
 
   const handleUsePrompt = (prompt: string) => {
@@ -161,7 +227,7 @@ export function AiLearningView({ onSelectPrompt }: AiLearningViewProps) {
       {/* Category Tabs */}
       <div className="flex justify-center w-full">
         <div className="inline-flex h-10 items-center justify-center rounded-md bg-slate-100 p-1 text-slate-500 dark:bg-slate-800 dark:text-slate-400">
-          {["全部", "AI 软件", "使用教程", "学习资料"].map((tab) => (
+          {["全部", "实用软件", "提示词教程", "提效资料"].map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -187,11 +253,21 @@ export function AiLearningView({ onSelectPrompt }: AiLearningViewProps) {
                 "group cursor-pointer overflow-hidden transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:hover:shadow-none dark:hover:bg-slate-900/50",
                 card.borderColor
               )}
-              onClick={() => setSelectedCardId(card.id)}
+              onClick={() => {
+                setSelectedCardId(card.id);
+                setModalContent(card);
+              }}
             >
               <CardHeader>
-                <div className={cn("mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl", card.bgColor)}>
-                  <card.icon className={cn("h-6 w-6", card.color)} />
+                <div className="flex items-start justify-between">
+                  <div className={cn("mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl", card.bgColor)}>
+                    <card.icon className={cn("h-6 w-6", card.color)} />
+                  </div>
+                  {card.category && (
+                    <span className="inline-flex items-center gap-1 rounded-md bg-slate-50 px-2 py-1 text-xs font-medium text-slate-600 ring-1 ring-inset ring-slate-500/10 dark:bg-slate-400/10 dark:text-slate-400 dark:ring-slate-400/20">
+                      {getCategoryIcon(card.category)} {card.category}
+                    </span>
+                  )}
                 </div>
                 <CardTitle className="text-lg font-semibold text-slate-900 dark:text-slate-50">
                   {card.title}
@@ -223,20 +299,22 @@ export function AiLearningView({ onSelectPrompt }: AiLearningViewProps) {
         title={modalTitle}
         className="max-w-3xl"
       >
-        {loadingContent ? (
+        {!modalContentText && !modalItems ? (
           <div className="flex flex-col items-center justify-center py-20">
             <Loader2 className="h-8 w-8 animate-spin text-sky-500" />
-            <p className="mt-2 text-slate-500">加载详情中...</p>
+            <p className="mt-2 text-slate-500">内容加载中...</p>
           </div>
         ) : (
           <div className="space-y-4">
             {displayItem?.createdAt && (
-              <div className="flex items-center gap-2 text-sm text-slate-500">
-                <span className="rounded-full border px-2 py-0.5 text-xs font-medium bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400">
-                  {displayItem.category}
+              <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400 mb-6 pb-4 border-b border-slate-100 dark:border-slate-800/50">
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-indigo-50 to-blue-50 px-3 py-1 text-xs font-medium text-indigo-700 ring-1 ring-inset ring-indigo-700/10 dark:from-indigo-900/20 dark:to-blue-900/20 dark:text-indigo-300 dark:ring-indigo-400/20">
+                  {getCategoryIcon(displayItem.category)} {displayItem.category}
                 </span>
-                <span>•</span>
-                <span>{displayItem.createdAt.toLocaleDateString()}</span>
+                <span className="flex items-center gap-1.5 text-xs font-medium">
+                  <Calendar className="h-3.5 w-3.5 text-slate-400" />
+                  {displayItem.createdAt.toLocaleDateString()}
+                </span>
               </div>
             )}
             
@@ -271,8 +349,13 @@ export function AiLearningView({ onSelectPrompt }: AiLearningViewProps) {
               ))}
             </div>
           ) : (
-              <div className="prose prose-slate max-w-none dark:prose-invert">
-                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              <div className="prose prose-slate max-w-none dark:prose-invert prose-headings:font-bold prose-headings:tracking-tight prose-p:leading-relaxed prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-pre:p-0 prose-pre:bg-transparent prose-img:rounded-xl prose-img:shadow-md">
+                <ReactMarkdown 
+                  remarkPlugins={[remarkGfm]}
+                  components={{
+                    code: CodeBlock
+                  }}
+                >
                   {modalContentText}
                 </ReactMarkdown>
               </div>

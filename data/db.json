@@ -136,5 +136,119 @@
         "text": "\n### 1. 投喂样文 (Few-Shot Prompting)\n最直接的方法是给 AI 看你以前写的文章。\n**Prompt 示例**：\n“请模仿以下文字的风格（语气、用词习惯、句式长短），为我写一段关于[新主题]的内容。\n【样文 1】：......\n【样文 2】：......”\n\n### 2. 角色设定与风格描述\n明确告诉 AI 你是谁，以及你想要的风格关键词。\n**Prompt 示例**：\n“你是一个[资深科技博主]，你的写作风格是[犀利、幽默、喜欢用反讽]。请用这种风格评论一下最新的 iPhone 发布会。”\n**常用风格词**：\n- 亲切、温暖、治愈\n- 专业、客观、冷静\n- 幽默、风趣、玩梗\n- 激情、励志、热血\n\n### 3. 负面约束 (Negative Prompting)\n告诉 AI 不要什么，往往比告诉它要什么更有效。\n**Prompt 示例**：\n“请写一段关于[主题]的介绍。要求：\n- 不要使用翻译腔（如‘首先、其次、最后’的僵硬结构）。\n- 不要使用复杂的长难句。\n- 不要使用‘不仅...而且...’这种关联词，尽量用口语化的短句。”\n      "
       }
     }
+  ],
+  "ai_tools": [
+    {
+      "name": "ChatGPT",
+      "description": "OpenAI 推出的人工智能聊天机器人，支持多模态交互。",
+      "icon": "🤖",
+      "category": "Chatbot",
+      "url": "https://chat.openai.com",
+      "isHot": true
+    },
+    {
+      "name": "Midjourney",
+      "description": "目前最强大的 AI 绘画工具，生成画质惊人。",
+      "icon": "🎨",
+      "category": "Image",
+      "url": "https://www.midjourney.com",
+      "isHot": true
+    },
+    {
+      "name": "Runway",
+      "description": "专业的 AI 视频生成和编辑工具，影视级效果。",
+      "icon": "🎬",
+      "category": "Video",
+      "url": "https://runwayml.com",
+      "isHot": true
+    },
+    {
+      "name": "Jasper",
+      "description": "专为营销人员设计的 AI 写作助手。",
+      "icon": "✍️",
+      "category": "Writing",
+      "url": "https://www.jasper.ai",
+      "isHot": false
+    },
+    {
+      "name": "Notion AI",
+      "description": "集成在 Notion 中的 AI 助手，笔记整理神器。",
+      "icon": "📝",
+      "category": "Productivity",
+      "url": "https://www.notion.so",
+      "isHot": true
+    },
+    {
+      "name": "GitHub Copilot",
+      "description": "AI 编程助手，自动补全代码，提升开发效率。",
+      "icon": "💻",
+      "category": "Coding",
+      "url": "https://github.com/features/copilot",
+      "isHot": true
+    },
+    {
+      "name": "Canva",
+      "description": "在线设计平台，内置强大的 AI 设计功能。",
+      "icon": "🖌️",
+      "category": "Design",
+      "url": "https://www.canva.com",
+      "isHot": false
+    },
+    {
+      "name": "Perplexity",
+      "description": "AI 驱动的搜索引擎，提供精准答案和来源引用。",
+      "icon": "🔍",
+      "category": "Search",
+      "url": "https://www.perplexity.ai",
+      "isHot": true
+    },
+    {
+      "name": "Gamma",
+      "description": "AI 生成 PPT 和网页，一键生成美观演示文稿。",
+      "icon": "📊",
+      "category": "Presentation",
+      "url": "https://gamma.app",
+      "isHot": true
+    },
+    {
+      "name": "Pika",
+      "description": "创意视频生成平台，支持文字生成动画。",
+      "icon": "🎥",
+      "category": "Video",
+      "url": "https://pika.art",
+      "isHot": false
+    },
+    {
+      "name": "Claude",
+      "description": "Anthropic 推出的 AI 助手，长文本处理能力强。",
+      "icon": "🧠",
+      "category": "Chatbot",
+      "url": "https://claude.ai",
+      "isHot": true
+    },
+    {
+      "name": "Kimi",
+      "description": "月之暗面推出的智能助手，支持超长上下文。",
+      "icon": "🌙",
+      "category": "Chatbot",
+      "url": "https://kimi.moonshot.cn",
+      "isHot": true
+    },
+    {
+      "name": "文心一言",
+      "description": "百度推出的新一代知识增强大语言模型。",
+      "icon": "💙",
+      "category": "Chatbot",
+      "url": "https://yiyan.baidu.com",
+      "isHot": false
+    },
+    {
+      "name": "Stable Diffusion",
+      "description": "开源的 AI 绘画模型，支持本地部署。",
+      "icon": "🖼️",
+      "category": "Image",
+      "url": "https://stability.ai",
+      "isHot": true
+    }
   ]
 }

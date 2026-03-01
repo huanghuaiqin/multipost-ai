@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useActionState } from "react";
+import { motion, Variants } from "framer-motion";
 import {
   Sparkles,
   MessageCircle,
@@ -46,6 +47,36 @@ export interface RewriteViewProps {
 }
 
 export function RewriteView({ input, setInput }: RewriteViewProps) {
+  const containerVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.3,
+        delayChildren: 0.4,
+      },
+    },
+  };
+
+  const rowVariants: Variants = {
+    hidden: { opacity: 0 },
+    show: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+      },
+    },
+  };
+
+  const cardVariants: Variants = {
+    hidden: { opacity: 0, y: 20 },
+    show: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", stiffness: 300, damping: 24 },
+    },
+  };
+
   const [state, formAction, pending] = useActionState<RewriteState, FormData>(
     rewriteAction,
     initialState,
@@ -240,20 +271,41 @@ export function RewriteView({ input, setInput }: RewriteViewProps) {
   return (
     <div className="flex w-full flex-col gap-8">
       <header className="space-y-4 text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-200">
-          内容搬运工 · Multipost AI
-        </span>
-        <h1 className="text-balance text-3xl font-semibold tracking-tight text-slate-900 dark:text-slate-50 sm:text-4xl">
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <span className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/80 px-3 py-1 text-xs font-medium text-slate-700 shadow-sm backdrop-blur-sm dark:border-slate-800 dark:bg-slate-950/60 dark:text-slate-200">
+            内容搬运工 · Multipost AI
+          </span>
+        </motion.div>
+        <motion.h1
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mx-auto max-w-5xl text-balance bg-gradient-to-r from-blue-600 to-indigo-400 bg-clip-text text-5xl font-bold tracking-tight text-transparent sm:text-7xl sm:leading-tight"
+        >
           一段原始内容，一键改写为多平台多形态运营级文案
-        </h1>
-        <p className="mx-auto max-w-2xl text-sm text-slate-600 dark:text-slate-400">
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="mx-auto max-w-2xl text-base tracking-wide text-slate-600 dark:text-slate-400"
+        >
           这是一个专注于「内容搬运」场景的原型工具。粘贴任意一段内容或链接，即可调用 AI 一键生成多平台风格的改写文案。
-        </p>
+        </motion.p>
       </header>
 
       <section className="grid gap-6 lg:grid-cols-[minmax(0,2.2fr)_minmax(0,3fr)] lg:items-start">
-        <Card className="border-sky-100/80 shadow-sm shadow-sky-100/60 dark:border-sky-900/70 dark:shadow-none">
-          <CardHeader className="mb-3 flex flex-col items-start gap-2">
+        <motion.div
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5, delay: 0.3 }}
+        >
+          <Card className="border border-white/20 bg-white/60 shadow-sm backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-900/60 dark:shadow-none">
+            <CardHeader className="mb-3 flex flex-col items-start gap-2">
             <CardTitle className="inline-flex items-center gap-2 text-sm font-semibold">
               <Sparkles className="h-4 w-4 text-sky-500" />
               原始内容
@@ -330,6 +382,7 @@ export function RewriteView({ input, setInput }: RewriteViewProps) {
             )}
           </CardContent>
         </Card>
+        </motion.div>
 
         <div className="space-y-3">
           <div className="flex items-center justify-between gap-2">
@@ -348,13 +401,24 @@ export function RewriteView({ input, setInput }: RewriteViewProps) {
           </div>
 
           {/* 两行三列卡片布局 */}
-          <div className="space-y-3">
+          <motion.div
+            className="space-y-3"
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+          >
             {/* 第一行卡片：小红书、抖音、视频号 */}
-            <div className="grid gap-6 sm:grid-cols-3 lg:gap-8">
-              <Card className="flex flex-col border-rose-100/80 bg-rose-50/70 p-10 shadow-sm shadow-rose-100/70 dark:border-rose-900/70 dark:bg-rose-950/20">
+            <motion.div
+              className="grid gap-6 sm:grid-cols-3 lg:gap-8"
+              variants={rowVariants}
+            >
+              <motion.div variants={cardVariants} className="h-full">
+              <Card className="flex flex-col border-0 bg-white/60 p-10 shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/80 hover:shadow-xl hover:shadow-rose-500/20 dark:bg-slate-900/60 dark:shadow-none dark:hover:bg-slate-900/80">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Sparkles className="h-4 w-4 text-rose-500" />
+                  <CardTitle className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-rose-50 dark:bg-rose-900/30">
+                      <Sparkles className="h-4 w-4 text-rose-500" />
+                    </span>
                     小红书风格
                   </CardTitle>
                 </CardHeader>
@@ -400,11 +464,15 @@ export function RewriteView({ input, setInput }: RewriteViewProps) {
                   )}
                 </CardContent>
               </Card>
+              </motion.div>
 
-              <Card className="flex flex-col p-10">
+              <motion.div variants={cardVariants} className="h-full">
+              <Card className="flex flex-col border-0 bg-white/60 p-10 shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/80 hover:shadow-xl hover:shadow-fuchsia-500/20 dark:bg-slate-900/60 dark:shadow-none dark:hover:bg-slate-900/80">
                 <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Activity className="h-4 w-4 text-fuchsia-500" />
+                  <CardTitle className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-fuchsia-50 dark:bg-fuchsia-900/30">
+                      <Activity className="h-4 w-4 text-fuchsia-500" />
+                    </span>
                     抖音短视频
                   </CardTitle>
                 </CardHeader>
@@ -449,14 +517,16 @@ export function RewriteView({ input, setInput }: RewriteViewProps) {
                   )}
                 </CardContent>
               </Card>
+              </motion.div>
 
-              <Card className="flex flex-col p-10">
-                <CardHeader className="flex items-center justify-between gap-2 rounded-xl bg-gradient-to-r from-emerald-600 via-emerald-600 to-emerald-500 px-4 py-3 text-emerald-50 shadow-sm dark:from-emerald-700 dark:via-emerald-700 dark:to-emerald-600">
-                  <CardTitle className="flex items-center gap-2 text-emerald-50">
-                    <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10">
-                      <MessageCircle className="h-3.5 w-3.5 text-emerald-100" />
+              <motion.div variants={cardVariants} className="h-full">
+              <Card className="flex flex-col border-0 bg-white/60 p-10 shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/80 hover:shadow-xl hover:shadow-emerald-500/20 dark:bg-slate-900/60 dark:shadow-none dark:hover:bg-slate-900/80">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-emerald-50 dark:bg-emerald-900/30">
+                      <MessageCircle className="h-4 w-4 text-emerald-500" />
                     </span>
-                    <span>视频号风格</span>
+                    视频号风格
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="flex flex-1 flex-col justify-between">
@@ -501,11 +571,17 @@ export function RewriteView({ input, setInput }: RewriteViewProps) {
                   )}
                 </CardContent>
               </Card>
-            </div>
+              </motion.div>
+
+            </motion.div>
 
             {/* 第二行卡片：小红书视频分镜、YouTube、TikTok */}
-            <div className="grid gap-6 sm:grid-cols-3 lg:gap-8">
-              <Card className="flex flex-col p-10">
+            <motion.div
+              className="grid gap-6 sm:grid-cols-3 lg:gap-8"
+              variants={rowVariants}
+            >
+              <motion.div variants={cardVariants} className="h-full">
+              <Card className="flex flex-col border-0 bg-white/60 p-10 shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/80 hover:shadow-xl hover:shadow-rose-500/20 dark:bg-slate-900/60 dark:shadow-none dark:hover:bg-slate-900/80">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Clapperboard className="h-4 w-4 text-rose-500" />
@@ -553,8 +629,10 @@ export function RewriteView({ input, setInput }: RewriteViewProps) {
                   )}
                 </CardContent>
               </Card>
+              </motion.div>
 
-              <Card className="flex flex-col p-10">
+              <motion.div variants={cardVariants} className="h-full">
+              <Card className="flex flex-col border-0 bg-white/60 p-10 shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/80 hover:shadow-xl hover:shadow-red-500/20 dark:bg-slate-900/60 dark:shadow-none dark:hover:bg-slate-900/80">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <Youtube className="h-4 w-4 text-red-500" />
@@ -602,16 +680,19 @@ export function RewriteView({ input, setInput }: RewriteViewProps) {
                   )}
                 </CardContent>
               </Card>
+              </motion.div>
 
-              <div className="rounded-2xl bg-[conic-gradient(from_140deg_at_10%_0%,#f97316,#22d3ee,#a855f7,#f97316)] p-[1px] shadow-[0_0_26px_rgba(56,189,248,0.45)]">
-                <Card className="flex flex-col h-full rounded-[1rem] border-slate-900 bg-slate-950 text-slate-50 p-10">
-                  <CardHeader className="flex items-center justify-between gap-2">
-                    <CardTitle className="flex items-center gap-2 text-slate-50">
-                      <Globe2 className="h-4 w-4 text-sky-400" />
-                      <span>TikTok 国际版</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="flex flex-1 flex-col justify-between">
+              <motion.div variants={cardVariants} className="h-full">
+              <Card className="flex flex-col border-0 bg-white/60 p-10 shadow-sm backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:bg-white/80 hover:shadow-xl hover:shadow-sky-500/20 dark:bg-slate-900/60 dark:shadow-none dark:hover:bg-slate-900/80">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-3">
+                    <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-sky-50 dark:bg-sky-900/30">
+                      <Globe2 className="h-4 w-4 text-sky-500" />
+                    </span>
+                    TikTok 国际版
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="flex flex-1 flex-col justify-between">
                     {isLoading ? (
                       <div className="space-y-3">
                         <div className="h-3 w-28 rounded-full bg-sky-100 animate-pulse dark:bg-sky-900/60" />
@@ -652,10 +733,11 @@ export function RewriteView({ input, setInput }: RewriteViewProps) {
                       </p>
                     )}
                   </CardContent>
-                </Card>
-              </div>
-            </div>
-          </div>
+              </Card>
+              </motion.div>
+
+            </motion.div>
+          </motion.div>
           {hasResults && (
             <div className="flex justify-end">
               <Button

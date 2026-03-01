@@ -40,3 +40,16 @@ model Learning {
 
   @@map("learning")
 }
+
+model AITool {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  icon        String?
+  category    String
+  url         String
+  isHot       Boolean  @default(false) @map("is_hot")
+  createdAt   DateTime @default(now()) @map("created_at")
+
+  @@map("ai_tools")
+}

@@ -23,7 +23,7 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
     >
       <div
         className={cn(
-          "relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-slate-200 bg-white p-6 shadow-2xl dark:border-slate-800 dark:bg-slate-950",
+          "relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-xl border border-white/20 bg-white/80 p-6 shadow-2xl backdrop-blur-xl dark:border-slate-800/50 dark:bg-slate-950/80",
           className
         )}
         onClick={(e) => e.stopPropagation()}
@@ -37,7 +37,7 @@ export function Modal({ isOpen, onClose, title, children, className }: ModalProp
           <Button
             variant="ghost"
             size="sm"
-            className="absolute right-4 top-4 h-8 w-8 rounded-full p-0"
+            className="absolute right-4 top-4 h-8 w-8 rounded-full p-0 hover:bg-black/5 dark:hover:bg-white/10"
             onClick={onClose}
           >
             <X className="h-4 w-4" />
